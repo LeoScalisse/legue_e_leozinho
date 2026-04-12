@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Legué e Leozinho</title>
+<link href="src/css/style.css" rel="stylesheet">
+</head>
+<body>
+
+<!-- Floating hearts background -->
+<div class="hearts-bg" id="heartsBg"></div>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <button class="lightbox-close" onclick="closeLightbox()">✕</button>
+  <img id="lightboxImg" src="" alt="">
+</div>
+
+<div class="container">
+
+  <!-- Header -->
+  <header>
+    <div class="title-heart">
+      <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M18 31 C18 31 4 22 4 13 C4 8 8 5 12 5 C14.5 5 17 6.5 18 9 C19 6.5 21.5 5 24 5 C28 5 32 8 32 13 C32 22 18 31 18 31Z" fill="#7ec8e3" opacity="0.8"/>
+      </svg>
+      <h1 id="coupleTitle">Legué e Leozinho</h1>
+      <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M18 31 C18 31 4 22 4 13 C4 8 8 5 12 5 C14.5 5 17 6.5 18 9 C19 6.5 21.5 5 24 5 C28 5 32 8 32 13 C32 22 18 31 18 31Z" fill="#7ec8e3" opacity="0.8"/>
+      </svg>
+    </div>
+    <p class="subtitle">Que nosso amor cresça cada dia mais</p>
+  </header>
+
+  <!-- Timer Card -->
+  <div class="timer-card">
+    <div class="timer-label">⏱ Juntos há</div>
+    <div class="timer-blocks">
+      <div class="timer-unit">
+        <div class="timer-num" id="tYears">0</div>
+        <div class="timer-unit-label">anos</div>
+      </div>
+      <div class="timer-sep">·</div>
+      <div class="timer-unit">
+        <div class="timer-num" id="tMonths">0</div>
+        <div class="timer-unit-label">meses</div>
+      </div>
+      <div class="timer-sep">·</div>
+      <div class="timer-unit">
+        <div class="timer-num" id="tDays">0</div>
+        <div class="timer-unit-label">dias</div>
+      </div>
+      <div class="timer-sep">·</div>
+      <div class="timer-unit">
+        <div class="timer-num" id="tHours">00</div>
+        <div class="timer-unit-label">horas</div>
+      </div>
+      <div class="timer-sep">:</div>
+      <div class="timer-unit">
+        <div class="timer-num" id="tMins">00</div>
+        <div class="timer-unit-label">min</div>
+      </div>
+      <div class="timer-sep">:</div>
+      <div class="timer-unit">
+        <div class="timer-num" id="tSecs">00</div>
+        <div class="timer-unit-label">seg</div>
+      </div>
+    </div>
+    <p class="start-date-info" id="startDateInfo">Desde 10 de março de 2024 às mais ou menos 00:15 graças ao Thinelo kkkkk</p>
+  </div>
+
+  <!-- Calendar Section -->
+  <div class="section-title">
+    <svg viewBox="0 0 24 24" fill="#7ec8e3" xmlns="http://www.w3.org/2000/svg">
+      <path d="M4 6h16M4 10h16M9 2v6m6-6v6M3 6h18v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6z" stroke="#7ec8e3" stroke-width="1.5" fill="none"/>
+    </svg>
+    <h2>Nosso dia a dia de Memórias</h2>
+  </div>
+  
+  <div class="calendar-navigation">
+    <button id="prevMonth" onclick="prevMonth()">&lt;</button>
+    <h3 id="calendarTitle">Março 2024</h3>
+    <button id="nextMonth" onclick="nextMonth()">></button>
+  </div>
+  
+  <div class="calendar-container">
+    <div class="calendar-weekdays">
+      <div class="weekday">Dom</div>
+      <div class="weekday">Seg</div>
+      <div class="weekday">Ter</div>
+      <div class="weekday">Qua</div>
+      <div class="weekday">Qui</div>
+      <div class="weekday">Sex</div>
+      <div class="weekday">Sab</div>
+    </div>
+    <div class="calendar-days" id="calendarDays"></div>
+  </div>
+  
+  <!-- Day Details Modal -->
+  <div class="day-modal" id="dayModal" onclick="closeDayModal()">
+    <div class="day-modal-content" onclick="event.stopPropagation()">
+      <div class="day-modal-header">
+        <button class="day-modal-back" onclick="closeDayModal()">< Calendário</button>
+        <button class="day-modal-close" onclick="closeDayModal()">✕</button>
+      </div>
+      <h3 id="dayModalTitle"></h3>
+      <div class="day-modal-content-wrapper" id="dayModalContent"></div>
+    </div>
+  </div>
+
+  <!-- Memories Section -->
+  <div class="section-title">
+    <svg viewBox="0 0 24 24" fill="#7ec8e3" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 21C12 21 3 15 3 9C3 6.2 5.2 4 8 4C9.6 4 11 4.9 12 6.2C13 4.9 14.4 4 16 4C18.8 4 21 6.2 21 9C21 15 12 21 12 21Z"/>
+    </svg>
+    <h2>Nossas Memórias</h2>
+  </div>
+
+  <!-- Add Memory -->
+  <div class="add-memory-card">
+    <h3>+ Nova memória do dia</h3>
+    <div class="add-row">
+      <input type="date" id="memDate">
+      <input type="text" id="memNote" placeholder="O que vivemos hoje? 💙">
+      <label class="upload-btn">
+        📷 Fotos
+        <input type="file" id="memPhotos" accept="image/*" multiple onchange="previewPhotos(this)">
+      </label>
+      <button class="btn-add-memory" onclick="addMemory()">Guardar 💙</button>
+    </div>
+    <div class="preview-imgs" id="previewImgs"></div>
+  </div>
+
+  <!-- Grid -->
+  <div class="memories-grid" id="memoriesGrid"></div>
+
+</div>
+
+<script src="src/js/script.js"></script>
+</body>
+</html>
