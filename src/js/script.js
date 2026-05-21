@@ -12,7 +12,7 @@ function loadState() {
   try {
     const cn = localStorage.getItem('loveCoupleName');
     const mem = localStorage.getItem('loveMemories');
-    if (cn) { coupleName = cn; document.getElementById('coupleTitle').textContent = cn; }
+    if (cn) coupleName = cn;
     if (mem) memories = JSON.parse(mem);
   } catch(e) {}
   renderMemories();
