@@ -58,7 +58,7 @@ function updateTimer() {
 
   const opts = { day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' };
   document.getElementById('startDateInfo').textContent =
-    'Desde ' + startDate.toLocaleDateString('pt-BR', opts);
+    'Desde 10 de março de 2024 às mais ou menos 00:15 (Damn thinelo)';
 }
 
 setInterval(updateTimer, 1000);
