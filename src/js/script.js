@@ -279,6 +279,19 @@ function closeDayModal() {
   document.getElementById('dayModal').classList.remove('open');
 }
 
+// ---- SPECIAL HEART POPUP ----
+function openSpecialHeartPopup() {
+  const popup = document.getElementById('heartPopup');
+  popup.classList.add('open');
+  popup.setAttribute('aria-hidden', 'false');
+}
+
+function closeSpecialHeartPopup() {
+  const popup = document.getElementById('heartPopup');
+  popup.classList.remove('open');
+  popup.setAttribute('aria-hidden', 'true');
+}
+
 // ---- LIGHTBOX ----
 function openLightbox(src) {
   document.getElementById('lightboxImg').src = src;

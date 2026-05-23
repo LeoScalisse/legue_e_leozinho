@@ -98,6 +98,93 @@ h1 a:focus-visible {
   margin-top: 0.2rem;
 }
 
+/* ---- PROFILE PAGES ---- */
+.profile-page {
+  padding: 2rem 1rem;
+}
+
+.profile-container {
+  width: min(760px, 100%);
+  margin: 0 auto;
+}
+
+.profile-back {
+  display: inline-flex;
+  align-items: center;
+  margin-bottom: 1rem;
+  color: var(--blue-dark);
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.profile-back:hover,
+.profile-back:focus-visible {
+  color: var(--blue-mid);
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+}
+
+.profile-content {
+  background: var(--card);
+  border: 1.5px solid var(--blue-light);
+  border-radius: 24px;
+  box-shadow: var(--shadow);
+  padding: clamp(1.4rem, 4vw, 2.4rem);
+  text-align: center;
+  backdrop-filter: blur(8px);
+}
+
+.profile-content h1 {
+  margin-bottom: 1.4rem;
+}
+
+.profile-carousel {
+  margin-bottom: 1.6rem;
+  overflow: hidden;
+}
+
+.profile-carousel-track {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  padding-bottom: 0.8rem;
+  scroll-snap-type: x mandatory;
+}
+
+.profile-slide {
+  flex: 0 0 min(78vw, 360px);
+  aspect-ratio: 4 / 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px dashed var(--blue-light);
+  border-radius: 18px;
+  background: linear-gradient(160deg, #d0eaf8 0%, #f8fcff 100%);
+  color: var(--text-soft);
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  scroll-snap-align: center;
+}
+
+.profile-slide img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  border-radius: inherit;
+}
+
+.profile-description {
+  max-width: 640px;
+  margin: 0 auto;
+  color: var(--text);
+  font-size: 1rem;
+  line-height: 1.7;
+}
+
 /* ---- TIMER CARD ---- */
 .timer-card {
   background: var(--card);
@@ -184,6 +271,123 @@ h1 a:focus-visible {
   color: var(--blue-dark);
 }
 .section-title svg { width: 24px; height: 24px; }
+
+.special-heart-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: none;
+  appearance: none;
+  background: transparent;
+  color: var(--heart);
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.special-heart-trigger:hover,
+.special-heart-trigger:focus-visible {
+  transform: scale(1.18);
+  outline: none;
+}
+
+.special-heart-trigger:focus-visible {
+  border-radius: 999px;
+  box-shadow: 0 0 0 3px rgba(245, 197, 66, 0.35);
+}
+
+.special-heart-trigger path {
+  transform-origin: center;
+  animation: specialHeartColor 1.15s ease-in-out infinite;
+}
+
+@keyframes specialHeartColor {
+  0%, 100% {
+    fill: var(--heart);
+    transform: scale(1);
+  }
+  50% {
+    fill: #f5c542;
+    transform: scale(1.12);
+  }
+}
+
+.heart-popup {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 170;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: rgba(30, 74, 98, 0.42);
+  backdrop-filter: blur(3px);
+}
+
+.heart-popup.open {
+  display: flex;
+}
+
+.heart-popup-content {
+  position: relative;
+  width: min(420px, 92vw);
+  background: var(--white);
+  border: 1.5px solid var(--blue-light);
+  border-radius: 22px;
+  box-shadow: 0 12px 48px rgba(30, 74, 98, 0.24);
+  padding: 2.2rem 1.7rem 1.8rem;
+  text-align: center;
+}
+
+.heart-popup-close {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  border: none;
+  background: transparent;
+  color: var(--text-soft);
+  font-size: 1.2rem;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.heart-popup-close:hover,
+.heart-popup-close:focus-visible {
+  color: var(--blue-dark);
+  outline: none;
+}
+
+.heart-popup-icon {
+  width: 52px;
+  height: 52px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.8rem;
+  border-radius: 999px;
+  background: #fff5cd;
+}
+
+.heart-popup-icon svg {
+  width: 32px;
+  height: 32px;
+}
+
+.heart-popup-content h3 {
+  font-family: 'Playfair Display', serif;
+  color: var(--blue-dark);
+  font-size: 1.5rem;
+  margin-bottom: 0.6rem;
+}
+
+.heart-popup-content p {
+  color: var(--text);
+  font-size: 1rem;
+  line-height: 1.6;
+}
 
 /* ---- ADD MEMORY ---- */
 .add-memory-card {
