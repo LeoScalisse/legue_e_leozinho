@@ -280,7 +280,43 @@ function closeDayModal() {
 }
 
 // ---- SPECIAL HEART POPUP ----
-function openSpecialHeartPopup() {
+const defaultSpecialHeartContent = {
+  title: 'Good amor?',
+  text: 'Amor fica esperta que vira e mexe vai passar uns cora\u00e7\u00f5es especiais (para voc\u00ea que \u00e9 muito especial), cuidado pra n\u00e3o perder!',
+  color: '#f5c542'
+};
+
+const specialHeartContents = [
+  {
+    title: 'Conte\u00fado especial',
+    text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+    color: '#ff7ab6'
+  },
+  {
+    title: 'Conte\u00fado especial',
+    text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio praesent libero sed cursus ante dapibus diam.',
+    color: '#62c96b'
+  },
+  {
+    title: 'Conte\u00fado especial',
+    text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis sagittis ipsum praesent mauris fusce nec tellus.',
+    color: '#ef4f5f'
+  }
+];
+
+function setSpecialHeartPopupContent(content) {
+  const popupContent = content || defaultSpecialHeartContent;
+  const title = document.getElementById('heartPopupTitle');
+  const text = document.querySelector('.heart-popup-content p');
+  const icon = document.querySelector('.heart-popup-icon svg');
+
+  title.textContent = popupContent.title;
+  text.textContent = popupContent.text;
+  icon.setAttribute('fill', popupContent.color);
+}
+
+function openSpecialHeartPopup(content) {
+  setSpecialHeartPopupContent(content);
   const popup = document.getElementById('heartPopup');
   popup.classList.add('open');
   popup.setAttribute('aria-hidden', 'false');
@@ -321,8 +357,52 @@ function createHearts() {
   }
 }
 
+// ---- SPECIAL FLOATING HEARTS ----
+function createSpecialHeartsLayer() {
+  let layer = document.getElementById('specialHeartsLayer');
+  if (layer) return layer;
+
+  layer = document.createElement('div');
+  layer.id = 'specialHeartsLayer';
+  layer.className = 'special-hearts-layer';
+  document.body.appendChild(layer);
+  return layer;
+}
+
+function createSpecialHeart() {
+  const layer = createSpecialHeartsLayer();
+  const content = specialHeartContents[Math.floor(Math.random() * specialHeartContents.length)];
+  const heart = document.createElement('button');
+  const size = 34 + Math.random() * 22;
+  const left = 6 + Math.random() * 88;
+  const duration = 9 + Math.random() * 5;
+  const drift = Math.round((Math.random() * 80) - 40);
+
+  heart.type = 'button';
+  heart.className = 'special-heart-float';
+  heart.setAttribute('aria-label', 'Abrir conte\u00fado especial');
+  heart.style.cssText = `left:${left}%;--size:${size}px;--heart-color:${content.color};--drift:${drift}px;animation-duration:${duration}s;`;
+  heart.innerHTML = `<svg viewBox="0 0 24 24" fill="${content.color}" xmlns="http://www.w3.org/2000/svg">
+    <path d="M12 21C12 21 3 15 3 9C3 6.2 5.2 4 8 4C9.6 4 11 4.9 12 6.2C13 4.9 14.4 4 16 4C18.8 4 21 6.2 21 9C21 15 12 21 12 21Z"/>
+  </svg>`;
+
+  heart.addEventListener('click', () => {
+    openSpecialHeartPopup(content);
+    heart.remove();
+  });
+  heart.addEventListener('animationend', () => heart.remove());
+
+  layer.appendChild(heart);
+}
+
+function startSpecialHearts() {
+  setTimeout(createSpecialHeart, 25000);
+  setInterval(createSpecialHeart, 90000);
+}
+
 // ---- INIT ----
 createHearts();
+startSpecialHearts();
 loadState();
 updateTimer();
 renderCalendar();
