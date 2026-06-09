@@ -10,6 +10,7 @@
   --heart: #7ec8e3;
   --card: rgba(255,255,255,0.78);
   --shadow: 0 4px 32px rgba(90,160,200,0.13);
+  --verde-claro: #56f356;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -143,12 +144,18 @@ h1 a {
   text-decoration: none;
 }
 
-h1 a:hover,
-h1 a:focus-visible {
-  color: var(--blue-mid);
+#titulo-leozinho:hover{
+  color: var(--blue-light);
   text-decoration: underline;
   text-underline-offset: 0.16em;
 }
+
+#titulo-legue:hover{
+  color: var(--verde-claro);
+  text-decoration: underline;
+  text-underline-offset: 0.16em;
+}
+
 
 .subtitle {
   font-size: 1rem;

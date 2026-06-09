@@ -222,7 +222,7 @@ function renderCalendar() {
     dayDiv.innerHTML = `<div class="calendar-day-number">${day}</div>`;
     
     if (dayMemories.length > 0) {
-      dayDiv.innerHTML += `<div class="calendar-day-indicator">📷</div>`;
+      dayDiv.innerHTML += `<div class="calendar-day-indicator">💙</div>`;
     }
     
     dayDiv.onclick = () => showDayDetails(dateStr, dayMemories, day, month, year);
