@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nosso Cineminha</title>
+<link href="src/css/style.css" rel="stylesheet">
+</head>
+<body>
+
+<div class="hearts-bg" id="heartsBg"></div>
+
+<main class="container cineminha-page">
+  <a class="profile-back" href="./index.html">&lt; Voltar para as memórias</a>
+
+  <header class="cineminha-header">
+    <div class="title-heart">
+      <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M18 31 C18 31 4 22 4 13 C4 8 8 5 12 5 C14.5 5 17 6.5 18 9 C19 6.5 21.5 5 24 5 C28 5 32 8 32 13 C32 22 18 31 18 31Z" fill="#7ec8e3" opacity="0.8"/>
+      </svg>
+      <h1>Cineminha</h1>
+      <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M18 31 C18 31 4 22 4 13 C4 8 8 5 12 5 C14.5 5 17 6.5 18 9 C19 6.5 21.5 5 24 5 C28 5 32 8 32 13 C32 22 18 31 18 31Z" fill="#7ec8e3" opacity="0.8"/>
+      </svg>
+    </div>
+    <p class="subtitle">Todos os filmes que já vimos durante nosso namoro</p>
+  </header>
+
+  <section class="movie-search-card" aria-labelledby="searchTitle">
+    <h2 id="searchTitle">Adicionar filme</h2>
+    <div class="movie-search-row">
+      <input type="search" id="movieSearchInput" placeholder="Digite o título do filme">
+      <input type="number" id="movieYearInput" placeholder="Ano" min="1900" max="2100">
+      <button type="button" onclick="searchMovies()">Buscar</button>
+    </div>
+    <div class="movie-search-status" id="movieSearchStatus"></div>
+    <div class="movie-search-results" id="movieSearchResults"></div>
+  </section>
+
+  <section class="movie-manual-card" aria-labelledby="manualTitle">
+    <h2 id="manualTitle">Cadastro manual</h2>
+    <div class="movie-manual-grid">
+      <input type="text" id="manualTitleInput" placeholder="Título">
+      <input type="number" id="manualYearInput" placeholder="Ano" min="1900" max="2100">
+      <input type="url" id="manualPosterInput" placeholder="URL do cartaz">
+      <button type="button" onclick="addManualMovie()">Adicionar manualmente</button>
+    </div>
+  </section>
+
+  <section class="movie-library" aria-labelledby="libraryTitle">
+    <div class="movie-library-heading">
+      <div>
+        <h2 id="libraryTitle">Filmes vistos</h2>
+        <p id="movieCount">0 filmes salvos</p>
+      </div>
+      <button type="button" class="movie-clear-search" onclick="clearMovieSearch()">Limpar busca</button>
+    </div>
+    <div class="movie-grid" id="movieGrid"></div>
+  </section>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="src/js/supabase-config.js"></script>
+<script src="src/js/supabase-client.js"></script>
+<script src="src/js/cineminha.js"></script>
+</body>
+</html>

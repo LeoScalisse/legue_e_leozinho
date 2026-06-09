@@ -4,11 +4,45 @@ const startDate = new Date('2024-03-10T00:00:15');
 let coupleName = 'Legué e Leozinho';
 let memories = [];
 let pendingPhotos = [];
+let pendingPhotoFiles = [];
 let currentCalendarDate = new Date(new Date().getFullYear(), new Date().getMonth(), 1); // Mês atual
 
 // ---- LOAD ----
 // Carrega apenas memórias e nome do casal (se houver)
-function loadState() {
+function mapSupabaseMemory(memory) {
+  const photos = (memory.memory_photos || [])
+    .slice()
+    .sort((a, b) => a.display_order - b.display_order)
+    .map(photo => photo.public_url || window.loveSupabase.getPublicUrl(photo.storage_path))
+    .filter(Boolean);
+
+  return {
+    id: memory.id,
+    date: memory.memory_date,
+    note: memory.note || '',
+    photos
+  };
+}
+
+async function loadState() {
+  if (window.loveSupabase && window.loveSupabase.isReady()) {
+    try {
+      const { data, error } = await window.loveSupabase.client
+        .from('memories')
+        .select('id, memory_date, note, created_at, memory_photos(storage_path, public_url, display_order)')
+        .order('memory_date', { ascending: false })
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      memories = (data || []).map(mapSupabaseMemory);
+      renderMemories();
+      renderCalendar();
+      return;
+    } catch (e) {
+      console.warn('Supabase indisponivel para memorias, usando localStorage.', e);
+    }
+  }
+
   try {
     const cn = localStorage.getItem('loveCoupleName');
     const mem = localStorage.getItem('loveMemories');
@@ -66,10 +100,10 @@ setInterval(updateTimer, 1000);
 // ---- PHOTOS ----
 function previewPhotos(input) {
   pendingPhotos = [];
+  pendingPhotoFiles = Array.from(input.files);
   const container = document.getElementById('previewImgs');
   container.innerHTML = '';
-  const files = Array.from(input.files);
-  files.forEach(file => {
+  pendingPhotoFiles.forEach(file => {
     const reader = new FileReader();
     reader.onload = e => {
       pendingPhotos.push(e.target.result);
@@ -82,13 +116,55 @@ function previewPhotos(input) {
 }
 
 // ---- ADD MEMORY ----
-function addMemory() {
+async function addMemory() {
   const date = document.getElementById('memDate').value;
   const note = document.getElementById('memNote').value.trim();
   if (!date && !note && pendingPhotos.length === 0) {
     alert('Preencha a data, a nota ou adicione fotos!');
     return;
   }
+
+  if (window.loveSupabase && window.loveSupabase.isReady()) {
+    try {
+      const { data: insertedMemory, error: memoryError } = await window.loveSupabase.client
+        .from('memories')
+        .insert({
+          memory_date: date || new Date().toISOString().slice(0, 10),
+          note
+        })
+        .select('id')
+        .single();
+
+      if (memoryError) throw memoryError;
+
+      if (pendingPhotoFiles.length > 0) {
+        const uploadedPhotos = [];
+        for (let index = 0; index < pendingPhotoFiles.length; index++) {
+          const uploaded = await window.loveSupabase.uploadImage(`memories/${insertedMemory.id}`, pendingPhotoFiles[index]);
+          uploadedPhotos.push({
+            memory_id: insertedMemory.id,
+            storage_path: uploaded.storage_path,
+            public_url: uploaded.public_url,
+            display_order: index
+          });
+        }
+
+        const { error: photosError } = await window.loveSupabase.client
+          .from('memory_photos')
+          .insert(uploadedPhotos);
+
+        if (photosError) throw photosError;
+      }
+
+      await loadState();
+      resetMemoryForm();
+      return;
+    } catch (e) {
+      alert('Nao consegui salvar no Supabase agora. A memoria sera salva localmente neste navegador.');
+      console.warn('Erro ao salvar memoria no Supabase.', e);
+    }
+  }
+
   const memory = {
     id: Date.now(),
     date: date || new Date().toISOString().slice(0, 10),
@@ -99,12 +175,16 @@ function addMemory() {
   saveState();
   renderMemories();
   renderCalendar();
-  // Reset
+  resetMemoryForm();
+}
+
+function resetMemoryForm() {
   document.getElementById('memDate').value = '';
   document.getElementById('memNote').value = '';
   document.getElementById('memPhotos').value = '';
   document.getElementById('previewImgs').innerHTML = '';
   pendingPhotos = [];
+  pendingPhotoFiles = [];
 }
 
 // ---- RENDER ----
@@ -154,16 +234,48 @@ function renderMemories() {
         <div class="memory-date">${dateStr}</div>
         ${m.note ? `<div class="memory-note">${m.note}</div>` : ''}
         <div class="memory-actions">
-          <button class="btn-del" onclick="deleteMemory(${m.id})">Excluir</button>
+          <button class="btn-del" onclick="deleteMemory('${m.id}')">Excluir</button>
         </div>
       </div>
     </div>`;
   }).join('');
 }
 
-function deleteMemory(id) {
+async function deleteMemory(id) {
   if (!confirm('Excluir essa memória?')) return;
-  memories = memories.filter(m => m.id !== id);
+
+  if (window.loveSupabase && window.loveSupabase.isReady()) {
+    try {
+      const { data: photos, error: photosError } = await window.loveSupabase.client
+        .from('memory_photos')
+        .select('storage_path')
+        .eq('memory_id', id);
+
+      if (photosError) throw photosError;
+
+      const paths = (photos || []).map(photo => photo.storage_path).filter(Boolean);
+      if (paths.length > 0) {
+        await window.loveSupabase.client.storage
+          .from(window.loveSupabase.storageBucket)
+          .remove(paths);
+      }
+
+      const { error } = await window.loveSupabase.client
+        .from('memories')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+      await loadState();
+      return;
+    } catch (e) {
+      alert('Nao consegui excluir no Supabase agora.');
+      console.warn('Erro ao excluir memoria no Supabase.', e);
+      return;
+    }
+  }
+
+  memories = memories.filter(m => String(m.id) !== String(id));
   saveState();
   renderMemories();
   renderCalendar();
