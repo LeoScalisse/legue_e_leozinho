@@ -23,6 +23,14 @@
     return `${edgeBaseUrl.replace(/\/$/, '')}/${name}`;
   }
 
+  function edgeFunctionHeaders() {
+    if (!config.anonKey) return {};
+    return {
+      apikey: config.anonKey,
+      Authorization: `Bearer ${config.anonKey}`
+    };
+  }
+
   async function uploadImage(folder, file) {
     if (!client || !file) return null;
     const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '-');
@@ -46,6 +54,7 @@
     isReady,
     getPublicUrl,
     edgeFunctionUrl,
+    edgeFunctionHeaders,
     uploadImage
   };
 })();

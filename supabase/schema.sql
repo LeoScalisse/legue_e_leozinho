@@ -53,7 +53,8 @@ where api_id is not null and api_id <> '';
 create table if not exists public.movie_ratings (
   movie_id uuid not null references public.movies(id) on delete cascade,
   person_slug text not null check (person_slug in ('legue', 'leozinho')),
-  rating numeric(3, 1) check (rating >= 0 and rating <= 10),
+  rating numeric check (rating >= 0 and rating <= 10),
+  observation text,
   updated_at timestamptz not null default now(),
   primary key (movie_id, person_slug)
 );

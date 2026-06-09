@@ -1,6 +1,7 @@
 const MOVIES_STORAGE_KEY = 'cineminhaMovies';
 
 let cineminhaMovies = [];
+let activeMovieRatingId = null;
 
 function getMovieSearchApiUrl() {
   return window.loveSupabase && window.loveSupabase.edgeFunctionUrl('movie-search');
@@ -17,6 +18,52 @@ function escapeHtml(value) {
 
 function normalizePoster(poster) {
   return poster && poster !== 'N/A' ? poster : '';
+}
+
+function clampRating(value) {
+  if (value === '' || value === null || value === undefined) return '';
+  const rating = Number(value);
+  if (Number.isNaN(rating)) return '';
+  return Math.min(10, Math.max(0, rating));
+}
+
+function getStarFill(rating, index) {
+  const normalizedRating = clampRating(rating);
+  if (normalizedRating === '') return 0;
+  const stars = normalizedRating / 2;
+  return Math.min(100, Math.max(0, (stars - index) * 100));
+}
+
+function renderStars(rating, personClass, label) {
+  const ratingLabel = rating === '' || rating === null || rating === undefined ? 'sem nota' : rating;
+  const stars = Array.from({ length: 5 }, (_, index) => (
+    `<span class="movie-star" style="--fill:${getStarFill(rating, index)}%">&#9733;<span>&#9733;</span></span>`
+  )).join('');
+
+  return `<div class="movie-star-row ${personClass}" aria-label="${escapeHtml(label)}: ${escapeHtml(ratingLabel)} de 10">
+    <div class="movie-stars">${stars}</div>
+  </div>`;
+}
+
+function formatWatchedDate(dateValue) {
+  if (!dateValue) return '';
+  const date = new Date(`${dateValue}T12:00:00`);
+  if (Number.isNaN(date.getTime())) return dateValue;
+  return date.toLocaleDateString('pt-BR');
+}
+
+function getWatchedTime(movie) {
+  if (!movie.watchedAt) return 0;
+  const watchedDate = new Date(`${movie.watchedAt}T12:00:00`);
+  return Number.isNaN(watchedDate.getTime()) ? 0 : watchedDate.getTime();
+}
+
+function sortMoviesByWatchedDate(movies) {
+  return movies.slice().sort((a, b) => {
+    const watchedDiff = getWatchedTime(b) - getWatchedTime(a);
+    if (watchedDiff !== 0) return watchedDiff;
+    return String(b.id).localeCompare(String(a.id));
+  });
 }
 
 function mapSupabaseMovie(movie) {
@@ -36,6 +83,8 @@ function mapSupabaseMovie(movie) {
     plot: movie.plot || '',
     legueRating: legueRating && legueRating.rating !== null ? legueRating.rating : '',
     leozinhoRating: leozinhoRating && leozinhoRating.rating !== null ? leozinhoRating.rating : '',
+    legueObservation: legueRating ? (legueRating.observation || '') : '',
+    leozinhoObservation: leozinhoRating ? (leozinhoRating.observation || '') : '',
     watchedAt: movie.watched_at || ''
   };
 }
@@ -45,11 +94,12 @@ async function loadCineminhaState() {
     try {
       const { data, error } = await window.loveSupabase.client
         .from('movies')
-        .select('id, api_id, imdb_id, title, release_year, poster_url, genre, runtime, plot, watched_at, created_at, movie_ratings(person_slug, rating)')
+        .select('id, api_id, imdb_id, title, release_year, poster_url, genre, runtime, plot, watched_at, created_at, movie_ratings(person_slug, rating, observation)')
+        .order('watched_at', { ascending: false, nullsFirst: false })
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      cineminhaMovies = (data || []).map(mapSupabaseMovie);
+      cineminhaMovies = sortMoviesByWatchedDate((data || []).map(mapSupabaseMovie));
       renderMovieGrid();
       return;
     } catch (error) {
@@ -59,7 +109,7 @@ async function loadCineminhaState() {
 
   try {
     const savedMovies = localStorage.getItem(MOVIES_STORAGE_KEY);
-    cineminhaMovies = savedMovies ? JSON.parse(savedMovies) : [];
+    cineminhaMovies = savedMovies ? sortMoviesByWatchedDate(JSON.parse(savedMovies)) : [];
   } catch (error) {
     cineminhaMovies = [];
   }
@@ -114,12 +164,12 @@ async function searchMovies() {
   const year = document.getElementById('movieYearInput').value.trim();
 
   if (!movieSearchApiUrl) {
-    setMovieSearchStatus('Configure o Supabase para usar a busca por API. Use o cadastro manual por enquanto.');
+    setMovieSearchStatus('Configure o Supabase para usar a busca por API.');
     return;
   }
 
   if (!query) {
-    setMovieSearchStatus('Digite o título do filme.');
+    setMovieSearchStatus('Digite o tÃ­tulo do filme.');
     return;
   }
 
@@ -130,7 +180,9 @@ async function searchMovies() {
   if (year) params.set('y', year);
 
   try {
-    const response = await fetch(`${movieSearchApiUrl}?${params.toString()}`);
+    const response = await fetch(`${movieSearchApiUrl}?${params.toString()}`, {
+      headers: window.loveSupabase.edgeFunctionHeaders()
+    });
     const data = await response.json();
 
     if (!response.ok || data.error) {
@@ -141,7 +193,7 @@ async function searchMovies() {
     setMovieSearchStatus('Escolha um resultado para adicionar.');
     renderMovieSearchResults(data.results || []);
   } catch (error) {
-    setMovieSearchStatus('Não consegui acessar a busca agora. Tente de novo ou use o cadastro manual.');
+    setMovieSearchStatus('Nao consegui acessar a busca agora. Tente de novo em instantes.');
   }
 }
 
@@ -170,7 +222,7 @@ async function addMovieFromApi(movieId) {
   }
 
   if (cineminhaMovies.some(movie => movie.apiId === movieId)) {
-    setMovieSearchStatus('Esse filme já está no cineminha.');
+    setMovieSearchStatus('Esse filme jÃ¡ estÃ¡ no cineminha.');
     return;
   }
 
@@ -178,11 +230,13 @@ async function addMovieFromApi(movieId) {
   const params = new URLSearchParams({ id: movieId });
 
   try {
-    const response = await fetch(`${movieSearchApiUrl}?${params.toString()}`);
+    const response = await fetch(`${movieSearchApiUrl}?${params.toString()}`, {
+      headers: window.loveSupabase.edgeFunctionHeaders()
+    });
     const movie = await response.json();
 
     if (!response.ok || movie.error) {
-      setMovieSearchStatus(movie.error || 'Não consegui carregar os detalhes.');
+      setMovieSearchStatus(movie.error || 'NÃ£o consegui carregar os detalhes.');
       return;
     }
 
@@ -204,53 +258,15 @@ async function addMovieFromApi(movieId) {
     await persistNewMovie(movieRecord);
     setMovieSearchStatus('Filme adicionado ao cineminha.');
   } catch (error) {
-    setMovieSearchStatus('Não consegui adicionar pela busca agora. Tente de novo ou use o cadastro manual.');
+    setMovieSearchStatus('Nao consegui adicionar pela busca agora. Tente de novo em instantes.');
   }
 }
 
-async function addManualMovie() {
-  const title = document.getElementById('manualTitleInput').value.trim();
-  const year = document.getElementById('manualYearInput').value.trim();
-  const poster = document.getElementById('manualPosterInput').value.trim();
-
-  if (!title) {
-    alert('Coloque pelo menos o título do filme.');
-    return;
-  }
-
-  const movieRecord = {
-    id: Date.now(),
-    apiId: '',
-    imdbID: '',
-    title,
-    year,
-    poster,
-    genre: '',
-    runtime: '',
-    plot: '',
-    legueRating: '',
-    leozinhoRating: '',
-    watchedAt: new Date().toISOString().slice(0, 10)
-  };
-
-  try {
-    await persistNewMovie(movieRecord);
-  } catch (error) {
-    alert('Nao consegui salvar no Supabase agora. O filme sera salvo localmente neste navegador.');
-    cineminhaMovies.unshift(movieRecord);
-    saveCineminhaMovies();
-    renderMovieGrid();
-  }
-
-  document.getElementById('manualTitleInput').value = '';
-  document.getElementById('manualYearInput').value = '';
-  document.getElementById('manualPosterInput').value = '';
-}
-
-async function updateMovieRating(id, field, value) {
+async function updateMovieFeedback(id, field, value, observation) {
   const personSlug = field === 'legueRating' ? 'legue' : 'leozinho';
+  const observationField = field === 'legueRating' ? 'legueObservation' : 'leozinhoObservation';
   cineminhaMovies = cineminhaMovies.map(movie => (
-    String(movie.id) === String(id) ? { ...movie, [field]: value } : movie
+    String(movie.id) === String(id) ? { ...movie, [field]: value, [observationField]: observation } : movie
   ));
 
   if (window.loveSupabase && window.loveSupabase.isReady()) {
@@ -261,17 +277,27 @@ async function updateMovieRating(id, field, value) {
         movie_id: id,
         person_slug: personSlug,
         rating,
+        observation: observation || null,
         updated_at: new Date().toISOString()
       }, { onConflict: 'movie_id,person_slug' });
 
     if (error) {
-      alert('Nao consegui salvar essa nota no Supabase agora.');
-      console.warn('Erro ao salvar nota no Supabase.', error);
+      alert('Nao consegui salvar essa nota e observacao no Supabase agora.');
+      console.warn('Erro ao salvar nota/observacao no Supabase.', error);
     }
     return;
   }
 
+  cineminhaMovies = sortMoviesByWatchedDate(cineminhaMovies);
   saveCineminhaMovies();
+}
+
+async function updateMovieRating(id, field, value) {
+  const movie = findMovieById(id);
+  const observation = field === 'legueRating'
+    ? (movie && movie.legueObservation) || ''
+    : (movie && movie.leozinhoObservation) || '';
+  await updateMovieFeedback(id, field, value, observation);
 }
 
 async function updateWatchedDate(id, value) {
@@ -319,6 +345,66 @@ async function deleteMovie(id) {
   renderMovieGrid();
 }
 
+function findMovieById(id) {
+  return cineminhaMovies.find(movie => String(movie.id) === String(id));
+}
+
+function openMovieRatingModal(id) {
+  const movie = findMovieById(id);
+  if (!movie) return;
+
+  activeMovieRatingId = String(movie.id);
+  const poster = normalizePoster(movie.poster);
+  const posterContainer = document.getElementById('movieRatingPoster');
+
+  posterContainer.innerHTML = poster
+    ? `<img src="${escapeHtml(poster)}" alt="Cartaz de ${escapeHtml(movie.title)}">`
+    : '<span>Sem cartaz</span>';
+
+  document.getElementById('movieRatingTitle').textContent = movie.title;
+  document.getElementById('movieRatingYear').textContent = movie.year || '';
+  document.getElementById('modalLegueRating').value = movie.legueRating === 0 ? 0 : (movie.legueRating || '');
+  document.getElementById('modalLeozinhoRating').value = movie.leozinhoRating === 0 ? 0 : (movie.leozinhoRating || '');
+  document.getElementById('modalLegueObservation').value = movie.legueObservation || '';
+  document.getElementById('modalLeozinhoObservation').value = movie.leozinhoObservation || '';
+  document.getElementById('modalWatchedAt').value = movie.watchedAt || '';
+
+  const modal = document.getElementById('movieRatingModal');
+  modal.classList.add('open');
+  modal.setAttribute('aria-hidden', 'false');
+}
+
+function closeMovieRatingModal() {
+  const modal = document.getElementById('movieRatingModal');
+  modal.classList.remove('open');
+  modal.setAttribute('aria-hidden', 'true');
+  activeMovieRatingId = null;
+}
+
+async function saveMovieRatingModal() {
+  if (!activeMovieRatingId) return;
+
+  const legueRating = clampRating(document.getElementById('modalLegueRating').value);
+  const leozinhoRating = clampRating(document.getElementById('modalLeozinhoRating').value);
+  const legueObservation = document.getElementById('modalLegueObservation').value.trim();
+  const leozinhoObservation = document.getElementById('modalLeozinhoObservation').value.trim();
+  const watchedAt = document.getElementById('modalWatchedAt').value;
+
+  await updateMovieFeedback(activeMovieRatingId, 'legueRating', legueRating, legueObservation);
+  await updateMovieFeedback(activeMovieRatingId, 'leozinhoRating', leozinhoRating, leozinhoObservation);
+  await updateWatchedDate(activeMovieRatingId, watchedAt);
+  cineminhaMovies = sortMoviesByWatchedDate(cineminhaMovies);
+  renderMovieGrid();
+  closeMovieRatingModal();
+}
+
+async function deleteMovieFromModal() {
+  if (!activeMovieRatingId) return;
+  const movieId = activeMovieRatingId;
+  closeMovieRatingModal();
+  await deleteMovie(movieId);
+}
+
 function renderMovieGrid() {
   const grid = document.getElementById('movieGrid');
   const count = document.getElementById('movieCount');
@@ -332,14 +418,15 @@ function renderMovieGrid() {
         <path d="M10 16h36v28H10z" fill="#b8ddf0" opacity="0.7"/>
         <path d="M14 12l4 8m8-8l4 8m8-8l4 8M10 22h36" stroke="#5fafd4" stroke-width="2" stroke-linecap="round"/>
       </svg>
-      <p>Nenhum filme salvo ainda.<br>Procure o primeiro título do cineminha.</p>
+      <p>Nenhum filme salvo ainda.<br>Procure o primeiro titulo do cineminha.</p>
     </div>`;
     return;
   }
 
   grid.innerHTML = cineminhaMovies.map(movie => {
     const poster = normalizePoster(movie.poster);
-    return `<article class="movie-card">
+    const movieId = escapeHtml(movie.id);
+    return `<article class="movie-card" onclick="openMovieRatingModal('${movieId}')" tabindex="0" role="button" aria-label="Editar notas de ${escapeHtml(movie.title)}" onkeydown="if(event.key === 'Enter' || event.key === ' ') { event.preventDefault(); openMovieRatingModal('${movieId}'); }">
       <div class="movie-card-poster">
         ${poster ? `<img src="${escapeHtml(poster)}" alt="Cartaz de ${escapeHtml(movie.title)}">` : '<span>Sem cartaz</span>'}
       </div>
@@ -348,23 +435,11 @@ function renderMovieGrid() {
           <h3>${escapeHtml(movie.title)}</h3>
           ${movie.year ? `<span>${escapeHtml(movie.year)}</span>` : ''}
         </div>
-        ${movie.genre || movie.runtime ? `<p class="movie-card-meta">${escapeHtml([movie.genre, movie.runtime].filter(Boolean).join(' - '))}</p>` : ''}
-        ${movie.plot ? `<p class="movie-card-plot">${escapeHtml(movie.plot)}</p>` : ''}
-        <div class="movie-ratings">
-          <label>
-            Legué
-            <input type="number" min="0" max="10" step="0.5" value="${escapeHtml(movie.legueRating)}" onchange="updateMovieRating('${escapeHtml(movie.id)}', 'legueRating', this.value)">
-          </label>
-          <label>
-            Leozinho
-            <input type="number" min="0" max="10" step="0.5" value="${escapeHtml(movie.leozinhoRating)}" onchange="updateMovieRating('${escapeHtml(movie.id)}', 'leozinhoRating', this.value)">
-          </label>
+        ${movie.watchedAt ? `<p class="movie-card-watched">visto ${escapeHtml(formatWatchedDate(movie.watchedAt))}</p>` : ''}
+        <div class="movie-card-stars">
+          ${renderStars(movie.legueRating, 'legue-stars', 'LeguÃ©')}
+          ${renderStars(movie.leozinhoRating, 'leozinho-stars', 'Leozinho')}
         </div>
-        <label class="movie-watched-date">
-          Assistido em
-          <input type="date" value="${escapeHtml(movie.watchedAt)}" onchange="updateWatchedDate('${escapeHtml(movie.id)}', this.value)">
-        </label>
-        <button type="button" class="btn-del movie-delete" onclick="deleteMovie('${escapeHtml(movie.id)}')">Excluir</button>
       </div>
     </article>`;
   }).join('');

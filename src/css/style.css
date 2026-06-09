@@ -1020,7 +1020,6 @@ h1 a {
 
 .cineminha-teaser-copy h2,
 .movie-search-card h2,
-.movie-manual-card h2,
 .movie-library-heading h2 {
   font-family: 'Playfair Display', serif;
   color: var(--blue-dark);
@@ -1040,7 +1039,6 @@ h1 a {
 
 .cineminha-teaser-link,
 .movie-search-row button,
-.movie-manual-grid button,
 .movie-result-info button,
 .movie-clear-search {
   display: inline-flex;
@@ -1062,7 +1060,6 @@ h1 a {
 
 .cineminha-teaser-link:hover,
 .movie-search-row button:hover,
-.movie-manual-grid button:hover,
 .movie-result-info button:hover,
 .movie-clear-search:hover {
   background: var(--blue-dark);
@@ -1078,7 +1075,6 @@ h1 a {
 }
 
 .movie-search-card,
-.movie-manual-card,
 .movie-library {
   background: var(--card);
   border: 1.5px solid var(--blue-light);
@@ -1089,14 +1085,12 @@ h1 a {
   backdrop-filter: blur(8px);
 }
 
-.movie-search-card h2,
-.movie-manual-card h2 {
+.movie-search-card h2 {
   font-size: 1.25rem;
   margin-bottom: 0.35rem;
 }
 
-.movie-search-row,
-.movie-manual-grid {
+.movie-search-row {
   display: flex;
   gap: 0.65rem;
   align-items: center;
@@ -1106,14 +1100,7 @@ h1 a {
   margin-top: 0.8rem;
 }
 
-.movie-manual-grid {
-  display: grid;
-  grid-template-columns: 1.2fr 0.45fr 1.2fr auto;
-  margin-top: 0.8rem;
-}
-
 .movie-search-row input,
-.movie-manual-grid input,
 .movie-ratings input,
 .movie-watched-date input {
   min-width: 0;
@@ -1127,8 +1114,7 @@ h1 a {
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 
-.movie-search-row input,
-.movie-manual-grid input {
+.movie-search-row input {
   width: 100%;
   padding: 0.62rem 0.75rem;
 }
@@ -1139,7 +1125,6 @@ h1 a {
 }
 
 .movie-search-row input:focus,
-.movie-manual-grid input:focus,
 .movie-ratings input:focus,
 .movie-watched-date input:focus {
   border-color: var(--blue-mid);
@@ -1301,20 +1286,6 @@ h1 a {
   flex-shrink: 0;
 }
 
-.movie-card-meta {
-  color: var(--blue-mid);
-  font-size: 0.8rem;
-  font-weight: 700;
-  margin-bottom: 0.35rem;
-}
-
-.movie-card-plot {
-  color: var(--text);
-  font-size: 0.86rem;
-  line-height: 1.45;
-  margin-bottom: 0.8rem;
-}
-
 .movie-ratings {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -1344,6 +1315,249 @@ h1 a {
 
 .movie-empty-state {
   grid-column: 1 / -1;
+}
+
+.movie-grid {
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+}
+
+.movie-card {
+  grid-template-columns: 84px 1fr;
+  align-items: start;
+  gap: 0.78rem;
+  cursor: pointer;
+}
+
+.movie-card:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(126, 200, 227, 0.32), 0 10px 32px rgba(90, 160, 200, 0.18);
+}
+
+.movie-card-poster {
+  width: 84px;
+  min-height: 126px;
+}
+
+.movie-card-heading {
+  margin-bottom: 0.7rem;
+}
+
+.movie-card-heading h3 {
+  font-size: 1rem;
+}
+
+.movie-card-stars {
+  display: flex;
+  flex-direction: column;
+  gap: 0.24rem;
+}
+
+.movie-star-row {
+  display: block;
+}
+
+.movie-star-row > span:first-child {
+  color: var(--text-soft);
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.movie-stars {
+  display: flex;
+  gap: 0.08rem;
+  line-height: 1;
+}
+
+.movie-star {
+  --star-empty: #d5e8f2;
+  display: inline-block;
+  position: relative;
+  color: var(--star-empty);
+  font-size: 1.12rem;
+  width: 1em;
+  height: 1em;
+  line-height: 1;
+}
+
+.movie-star > span {
+  position: absolute;
+  inset: 0;
+  width: var(--fill);
+  overflow: hidden;
+  color: var(--star-color, var(--blue-light));
+}
+
+.legue-stars {
+  --star-color: var(--verde-claro);
+}
+
+.leozinho-stars {
+  --star-color: var(--blue-mid);
+}
+
+.movie-card-watched {
+  color: #8a9aa3;
+  font-size: 0.78rem;
+  font-weight: 400;
+  margin-bottom: 0.42rem;
+}
+
+.movie-rating-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 180;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: rgba(30, 74, 98, 0.42);
+  backdrop-filter: blur(3px);
+}
+
+.movie-rating-modal.open {
+  display: flex;
+}
+
+.movie-rating-modal-content {
+  position: relative;
+  width: min(560px, 94vw);
+  background: var(--white);
+  border: 1.5px solid var(--blue-light);
+  border-radius: 20px;
+  box-shadow: 0 12px 48px rgba(30, 74, 98, 0.24);
+  padding: 1.25rem;
+}
+
+.movie-rating-modal-close {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  border: none;
+  background: transparent;
+  color: var(--text-soft);
+  font-size: 1.25rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.movie-rating-modal-main {
+  display: grid;
+  grid-template-columns: 128px 1fr;
+  gap: 1rem;
+  align-items: start;
+}
+
+.movie-rating-modal-poster {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 128px;
+  min-height: 192px;
+  overflow: hidden;
+  border-radius: 14px;
+  background: var(--bg2);
+  color: var(--text-soft);
+  font-weight: 800;
+  text-align: center;
+}
+
+.movie-rating-modal-poster img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.movie-rating-modal-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.85rem;
+  align-items: flex-start;
+  margin-right: 1.7rem;
+  margin-bottom: 1rem;
+}
+
+.movie-rating-modal-heading h2 {
+  color: var(--blue-dark);
+  font-family: 'Playfair Display', serif;
+  font-size: 1.35rem;
+  line-height: 1.18;
+}
+
+.movie-rating-modal-heading span {
+  color: var(--blue-mid);
+  font-size: 0.9rem;
+  font-weight: 900;
+}
+
+.movie-rating-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.movie-rating-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.32rem;
+  color: var(--text-soft);
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.movie-rating-form input,
+.movie-rating-form textarea {
+  min-width: 0;
+  border: 1.5px solid var(--blue-light);
+  border-radius: 12px;
+  background: var(--white);
+  color: var(--text);
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.95rem;
+  outline: none;
+  padding: 0.55rem 0.65rem;
+  resize: vertical;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.movie-rating-form input:focus,
+.movie-rating-form textarea:focus {
+  border-color: var(--blue-mid);
+  box-shadow: 0 0 0 3px rgba(126, 200, 227, 0.22);
+}
+
+.movie-rating-date {
+  grid-column: 1 / -1;
+}
+
+.movie-rating-modal-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  align-items: center;
+}
+
+.movie-rating-save {
+  border: none;
+  border-radius: 12px;
+  background: var(--blue-mid);
+  color: var(--white);
+  padding: 0.62rem 1rem;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.movie-rating-save:hover {
+  background: var(--blue-dark);
+  transform: translateY(-1px);
 }
 
 /* ---- DAY MODAL ---- */
@@ -1529,26 +1743,46 @@ h1 a {
     align-items: stretch;
   }
 
-  .movie-manual-grid {
-    grid-template-columns: 1fr;
-  }
-
   .movie-search-row input[type="number"] {
     width: 100%;
     flex-basis: auto;
   }
 
   .movie-card {
-    grid-template-columns: 88px 1fr;
+    grid-template-columns: 78px 1fr;
     gap: 0.8rem;
   }
 
   .movie-card-poster {
-    width: 88px;
-    min-height: 132px;
+    width: 78px;
+    min-height: 117px;
   }
 
   .movie-ratings {
+    grid-template-columns: 1fr;
+  }
+
+  .movie-rating-modal-main {
+    grid-template-columns: 92px 1fr;
+    gap: 0.85rem;
+  }
+
+  .movie-rating-modal-poster {
+    width: 92px;
+    min-height: 138px;
+  }
+
+  .movie-rating-modal-heading {
+    flex-direction: column;
+    gap: 0.25rem;
+    margin-right: 1.5rem;
+  }
+
+  .movie-rating-modal-heading h2 {
+    font-size: 1.08rem;
+  }
+
+  .movie-rating-form {
     grid-template-columns: 1fr;
   }
   

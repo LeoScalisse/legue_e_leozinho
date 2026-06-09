@@ -37,16 +37,6 @@
     <div class="movie-search-results" id="movieSearchResults"></div>
   </section>
 
-  <section class="movie-manual-card" aria-labelledby="manualTitle">
-    <h2 id="manualTitle">Cadastro manual</h2>
-    <div class="movie-manual-grid">
-      <input type="text" id="manualTitleInput" placeholder="Título">
-      <input type="number" id="manualYearInput" placeholder="Ano" min="1900" max="2100">
-      <input type="url" id="manualPosterInput" placeholder="URL do cartaz">
-      <button type="button" onclick="addManualMovie()">Adicionar manualmente</button>
-    </div>
-  </section>
-
   <section class="movie-library" aria-labelledby="libraryTitle">
     <div class="movie-library-heading">
       <div>
@@ -58,6 +48,47 @@
     <div class="movie-grid" id="movieGrid"></div>
   </section>
 </main>
+
+<div class="movie-rating-modal" id="movieRatingModal" onclick="closeMovieRatingModal()" aria-hidden="true">
+  <div class="movie-rating-modal-content" onclick="event.stopPropagation()" role="dialog" aria-modal="true" aria-labelledby="movieRatingTitle">
+    <button class="movie-rating-modal-close" type="button" onclick="closeMovieRatingModal()" aria-label="Fechar">x</button>
+    <div class="movie-rating-modal-main">
+      <div class="movie-rating-modal-poster" id="movieRatingPoster"></div>
+      <div class="movie-rating-modal-info">
+        <div class="movie-rating-modal-heading">
+          <h2 id="movieRatingTitle"></h2>
+          <span id="movieRatingYear"></span>
+        </div>
+        <div class="movie-rating-form">
+          <label>
+            Legué
+            <input type="number" id="modalLegueRating" min="0" max="10" step="any" placeholder="0 a 10">
+          </label>
+          <label>
+            Leozinho
+            <input type="number" id="modalLeozinhoRating" min="0" max="10" step="any" placeholder="0 a 10">
+          </label>
+          <label>
+            Observação da Legué
+            <textarea id="modalLegueObservation" rows="3" placeholder="O que a Legué achou?"></textarea>
+          </label>
+          <label>
+            Observação do Leozinho
+            <textarea id="modalLeozinhoObservation" rows="3" placeholder="O que o Leozinho achou?"></textarea>
+          </label>
+          <label class="movie-rating-date">
+            Assistido em
+            <input type="date" id="modalWatchedAt">
+          </label>
+        </div>
+        <div class="movie-rating-modal-actions">
+          <button type="button" class="movie-rating-save" onclick="saveMovieRatingModal()">Salvar notas</button>
+          <button type="button" class="btn-del movie-delete" onclick="deleteMovieFromModal()">Excluir</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="src/js/supabase-config.js"></script>
