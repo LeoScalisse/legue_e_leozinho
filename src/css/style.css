@@ -263,6 +263,15 @@ h1 a {
   margin: 0 auto 1.8rem;
 }
 
+.characteristics-editor {
+  width: min(30em, 100%);
+  margin: 0 auto 1.8rem;
+}
+
+.characteristics-editor .rangeWrapper {
+  width: 100%;
+}
+
 .characteristic-meter {
   display: flex;
   flex-direction: column;
@@ -276,6 +285,161 @@ h1 a {
   font-family: 'Playfair Display', serif;
   font-size: 1.28rem;
   line-height: 1.1;
+}
+
+.characteristic-create-card {
+  width: 100%;
+  margin: 0 auto 1rem;
+  padding: 1rem;
+  border: 1.5px dashed var(--blue-light);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.68);
+  text-align: left;
+}
+
+.characteristic-create-collapsed {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 82px;
+  color: var(--blue-dark);
+  font-family: 'Playfair Display', serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s, border-color 0.2s;
+}
+
+.characteristic-create-collapsed:hover,
+.characteristic-create-collapsed:focus-visible {
+  background: rgba(255, 255, 255, 0.86);
+  border-color: var(--blue-mid);
+  outline: none;
+  transform: translateY(-1px);
+}
+
+.characteristic-create-card h2 {
+  color: var(--blue-dark);
+  font-family: 'Playfair Display', serif;
+  font-size: 1.15rem;
+  margin-bottom: 0.8rem;
+}
+
+.characteristic-create-grid {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.8rem;
+  align-items: end;
+}
+
+.characteristic-create-grid input[type="text"] {
+  min-width: 0;
+  border: 1.5px solid var(--blue-light);
+  border-radius: 12px;
+  background: var(--white);
+  color: var(--text);
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.92rem;
+  outline: none;
+  padding: 0.62rem 0.75rem;
+}
+
+.characteristic-create-grid input[type="text"]:focus {
+  border-color: var(--blue-mid);
+  box-shadow: 0 0 0 3px rgba(126, 200, 227, 0.22);
+}
+
+.characteristic-color-field,
+.characteristic-value-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  color: var(--text-soft);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.characteristic-color-field input[type="color"] {
+  width: 3.2rem;
+  height: 2.55rem;
+  padding: 0.2rem;
+  border: 1.5px solid var(--blue-light);
+  border-radius: 12px;
+  background: var(--white);
+  cursor: pointer;
+}
+
+.characteristic-value-field {
+  grid-column: 1 / -1;
+}
+
+.characteristic-value-field [type="range"].kawaii {
+  width: 100%;
+}
+
+.characteristic-add-button,
+.characteristic-save-button,
+.characteristic-cancel-button {
+  border: none;
+  border-radius: 12px;
+  background: var(--blue-mid);
+  color: var(--white);
+  padding: 0.62rem 1rem;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s, opacity 0.2s;
+}
+
+.characteristic-add-button {
+  margin-top: 0;
+}
+
+.characteristic-add-button:hover,
+.characteristic-save-button:hover:not(:disabled) {
+  background: var(--blue-dark);
+  transform: translateY(-1px);
+}
+
+.characteristic-cancel-button {
+  background: var(--bg2);
+  color: var(--blue-dark);
+  border: 1.5px solid var(--blue-light);
+}
+
+.characteristic-cancel-button:hover {
+  background: var(--blue-light);
+  color: var(--white);
+  transform: translateY(-1px);
+}
+
+.characteristic-create-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  margin-top: 0.85rem;
+}
+
+.characteristic-save-button:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.characteristic-save-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+}
+
+.characteristic-save-status {
+  min-height: 1.2rem;
+  color: var(--text-soft);
+  font-size: 0.86rem;
 }
 
 [type="range"].kawaii {
@@ -1075,7 +1239,9 @@ h1 a {
 }
 
 .movie-search-card,
-.movie-library {
+.movie-library,
+.movie-year-navigation,
+.movie-year-highlights {
   background: var(--card);
   border: 1.5px solid var(--blue-light);
   border-radius: 18px;
@@ -1230,6 +1396,133 @@ h1 a {
 
 .movie-clear-search:hover {
   color: var(--white);
+}
+
+.movie-year-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.9rem;
+}
+
+.movie-year-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 128px;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1.5px solid var(--blue-light);
+  border-radius: 16px;
+  color: var(--blue-dark);
+  text-align: center;
+  text-decoration: none;
+  transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+}
+
+.movie-year-card:hover,
+.movie-year-card:focus-visible {
+  border-color: var(--blue-mid);
+  box-shadow: 0 10px 32px rgba(90, 160, 200, 0.18);
+  outline: none;
+  transform: translateY(-3px);
+}
+
+.movie-year-card span {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.55rem;
+  font-weight: 800;
+}
+
+.movie-year-card strong {
+  color: var(--blue-mid);
+  font-size: 2rem;
+  line-height: 1;
+  margin-top: 0.4rem;
+}
+
+.movie-year-card small {
+  color: var(--text-soft);
+  font-size: 0.82rem;
+  font-weight: 800;
+  margin-top: 0.25rem;
+}
+
+.movie-year-highlights {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.movie-highlight-card {
+  min-width: 0;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1.5px solid var(--blue-light);
+  border-radius: 16px;
+  padding: 0.9rem;
+}
+
+.movie-highlight-card > span {
+  display: block;
+  color: var(--blue-dark);
+  font-size: 0.75rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.65rem;
+  text-transform: uppercase;
+}
+
+.movie-highlight-content {
+  display: grid;
+  grid-template-columns: 72px 1fr;
+  gap: 0.8rem;
+  align-items: center;
+}
+
+.movie-highlight-poster {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 72px;
+  min-height: 108px;
+  overflow: hidden;
+  background: var(--bg2);
+  border-radius: 10px;
+  color: var(--text-soft);
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-align: center;
+}
+
+.movie-highlight-poster img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.movie-highlight-card h3 {
+  color: var(--blue-dark);
+  font-size: 1rem;
+  line-height: 1.2;
+  margin-bottom: 0.25rem;
+}
+
+.movie-highlight-card p {
+  color: #8a9aa3;
+  font-size: 0.82rem;
+  margin-bottom: 0.35rem;
+}
+
+.movie-average-score {
+  color: #f0bc3c;
+  font-size: 1.25rem;
+  font-weight: 900;
+}
+
+.movie-highlight-empty {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 150px;
 }
 
 .movie-grid {
@@ -1726,6 +2019,14 @@ h1 a {
   .add-row { flex-direction: column; }
   .add-row input, .upload-btn, .btn-add-memory { width: 100%; }
 
+  .characteristic-create-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .characteristic-color-field input[type="color"] {
+    width: 100%;
+  }
+
   .cineminha-teaser {
     grid-template-columns: 1fr;
     text-align: center;
@@ -1784,6 +2085,24 @@ h1 a {
 
   .movie-rating-form {
     grid-template-columns: 1fr;
+  }
+
+  .movie-year-grid,
+  .movie-year-highlights {
+    grid-template-columns: 1fr;
+  }
+
+  .movie-year-card {
+    min-height: 112px;
+  }
+
+  .movie-highlight-content {
+    grid-template-columns: 64px 1fr;
+  }
+
+  .movie-highlight-poster {
+    width: 64px;
+    min-height: 96px;
   }
   
   .calendar-days {

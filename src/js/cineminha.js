@@ -1,4 +1,5 @@
 const MOVIES_STORAGE_KEY = 'cineminhaMovies';
+const CINEMINHA_YEARS = ['2023', '2024', '2025', '2026'];
 
 let cineminhaMovies = [];
 let activeMovieRatingId = null;
@@ -50,6 +51,21 @@ function formatWatchedDate(dateValue) {
   const date = new Date(`${dateValue}T12:00:00`);
   if (Number.isNaN(date.getTime())) return dateValue;
   return date.toLocaleDateString('pt-BR');
+}
+
+function getActiveMovieYear() {
+  const page = document.querySelector('[data-movie-year]');
+  return page ? String(page.dataset.movieYear || '') : '';
+}
+
+function getMovieWatchedYear(movie) {
+  return movie.watchedAt ? String(movie.watchedAt).slice(0, 4) : '';
+}
+
+function getVisibleMovies() {
+  const activeYear = getActiveMovieYear();
+  if (!activeYear) return cineminhaMovies;
+  return cineminhaMovies.filter(movie => getMovieWatchedYear(movie) === activeYear);
 }
 
 function getWatchedTime(movie) {
@@ -349,6 +365,81 @@ function findMovieById(id) {
   return cineminhaMovies.find(movie => String(movie.id) === String(id));
 }
 
+function getNumericRatings(movie) {
+  return [movie.legueRating, movie.leozinhoRating]
+    .map(rating => clampRating(rating))
+    .filter(rating => rating !== '');
+}
+
+function getMovieAverageRating(movie) {
+  const ratings = getNumericRatings(movie);
+  if (!ratings.length) return null;
+  return ratings.reduce((sum, rating) => sum + Number(rating), 0) / ratings.length;
+}
+
+function formatAverageRating(average) {
+  if (average === null || average === undefined) return 'sem nota';
+  return average.toFixed(1).replace('.', ',');
+}
+
+function renderMovieYearNavigation() {
+  const container = document.getElementById('movieYearGrid');
+  if (!container) return;
+
+  container.innerHTML = CINEMINHA_YEARS.map(year => {
+    const total = cineminhaMovies.filter(movie => getMovieWatchedYear(movie) === year).length;
+    return `<a class="movie-year-card" href="./cineminha-${year}.html">
+      <span>${year}</span>
+      <strong>${total}</strong>
+      <small>${total === 1 ? 'filme visto' : 'filmes vistos'}</small>
+    </a>`;
+  }).join('');
+}
+
+function renderHighlightMovie(movie, label) {
+  if (!movie) {
+    return `<article class="movie-highlight-card movie-highlight-empty">
+      <span>${label}</span>
+      <p>Ainda sem nota suficiente.</p>
+    </article>`;
+  }
+
+  const poster = normalizePoster(movie.poster);
+  const average = getMovieAverageRating(movie);
+
+  return `<article class="movie-highlight-card">
+    <span>${label}</span>
+    <div class="movie-highlight-content">
+      <div class="movie-highlight-poster">
+        ${poster ? `<img src="${escapeHtml(poster)}" alt="Cartaz de ${escapeHtml(movie.title)}">` : '<small>Sem cartaz</small>'}
+      </div>
+      <div>
+        <h3>${escapeHtml(movie.title)}</h3>
+        ${movie.watchedAt ? `<p>visto ${escapeHtml(formatWatchedDate(movie.watchedAt))}</p>` : ''}
+        <strong class="movie-average-score">Média ${escapeHtml(formatAverageRating(average))}</strong>
+      </div>
+    </div>
+  </article>`;
+}
+
+function renderMovieYearHighlights(visibleMovies) {
+  const container = document.getElementById('movieYearHighlights');
+  if (!container) return;
+
+  const ratedMovies = visibleMovies
+    .map(movie => ({ movie, average: getMovieAverageRating(movie) }))
+    .filter(item => item.average !== null)
+    .sort((a, b) => b.average - a.average || String(b.movie.id).localeCompare(String(a.movie.id)));
+
+  const bestMovie = ratedMovies.length ? ratedMovies[0].movie : null;
+  const worstMovie = ratedMovies.length ? ratedMovies[ratedMovies.length - 1].movie : null;
+
+  container.innerHTML = `
+    ${renderHighlightMovie(bestMovie, 'Melhor filme do ano')}
+    ${renderHighlightMovie(worstMovie, 'Pior filme do ano')}
+  `;
+}
+
 function openMovieRatingModal(id) {
   const movie = findMovieById(id);
   if (!movie) return;
@@ -408,22 +499,31 @@ async function deleteMovieFromModal() {
 function renderMovieGrid() {
   const grid = document.getElementById('movieGrid');
   const count = document.getElementById('movieCount');
-  const total = cineminhaMovies.length;
+  const activeYear = getActiveMovieYear();
+  const visibleMovies = getVisibleMovies();
+  const total = visibleMovies.length;
 
-  count.textContent = `${total} ${total === 1 ? 'filme salvo' : 'filmes salvos'}`;
+  renderMovieYearNavigation();
+  renderMovieYearHighlights(visibleMovies);
+  count.textContent = activeYear
+    ? `${total} ${total === 1 ? 'filme assistido' : 'filmes assistidos'} em ${activeYear}`
+    : `${total} ${total === 1 ? 'filme assistido' : 'filmes assistidos'} e contando... (obs: deve tá faltando alguns kkkkkk)`;
 
   if (total === 0) {
+    const emptyMessage = activeYear
+      ? `Nenhum filme visto em ${escapeHtml(activeYear)} ainda.`
+      : 'Nenhum filme salvo ainda.<br>Procure o primeiro titulo do cineminha.';
     grid.innerHTML = `<div class="empty-state movie-empty-state">
       <svg viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M10 16h36v28H10z" fill="#b8ddf0" opacity="0.7"/>
         <path d="M14 12l4 8m8-8l4 8m8-8l4 8M10 22h36" stroke="#5fafd4" stroke-width="2" stroke-linecap="round"/>
       </svg>
-      <p>Nenhum filme salvo ainda.<br>Procure o primeiro titulo do cineminha.</p>
+      <p>${emptyMessage}</p>
     </div>`;
     return;
   }
 
-  grid.innerHTML = cineminhaMovies.map(movie => {
+  grid.innerHTML = visibleMovies.map(movie => {
     const poster = normalizePoster(movie.poster);
     const movieId = escapeHtml(movie.id);
     return `<article class="movie-card" onclick="openMovieRatingModal('${movieId}')" tabindex="0" role="button" aria-label="Editar notas de ${escapeHtml(movie.title)}" onkeydown="if(event.key === 'Enter' || event.key === ' ') { event.preventDefault(); openMovieRatingModal('${movieId}'); }">

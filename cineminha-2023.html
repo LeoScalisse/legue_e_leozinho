@@ -3,59 +3,39 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Nosso Cineminha</title>
+<title>Cineminha 2023</title>
 <link href="src/css/style.css" rel="stylesheet">
 </head>
 <body>
 
 <div class="hearts-bg" id="heartsBg"></div>
 
-<main class="container cineminha-page">
-  <a class="profile-back" href="./index.html">&lt; Voltar para as memórias</a>
+<main class="container cineminha-page movie-year-page" data-movie-year="2023">
+  <a class="profile-back" href="./cineminha.html">&lt; Voltar para o Cineminha</a>
 
   <header class="cineminha-header">
     <div class="title-heart">
       <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M18 31 C18 31 4 22 4 13 C4 8 8 5 12 5 C14.5 5 17 6.5 18 9 C19 6.5 21.5 5 24 5 C28 5 32 8 32 13 C32 22 18 31 18 31Z" fill="#7ec8e3" opacity="0.8"/>
       </svg>
-      <h1>Cineminha</h1>
+      <h1>Filmes de 2023</h1>
       <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M18 31 C18 31 4 22 4 13 C4 8 8 5 12 5 C14.5 5 17 6.5 18 9 C19 6.5 21.5 5 24 5 C28 5 32 8 32 13 C32 22 18 31 18 31Z" fill="#7ec8e3" opacity="0.8"/>
       </svg>
     </div>
-    <p class="subtitle">Todos os filmes filmes graças meu amor legue ter falado árabe</p>
+    <p class="subtitle">Os filmes que marcaram esse ano do nosso cineminha.</p>
   </header>
 
-  <section class="movie-search-card" aria-labelledby="searchTitle">
-    <h2 id="searchTitle">Adicionar filme</h2>
-    <div class="movie-search-row">
-      <input type="search" id="movieSearchInput" placeholder="Digite o título do filme">
-      <input type="number" id="movieYearInput" placeholder="Ano" min="1900" max="2100">
-      <button type="button" onclick="searchMovies()">Buscar</button>
-    </div>
-    <div class="movie-search-status" id="movieSearchStatus"></div>
-    <div class="movie-search-results" id="movieSearchResults"></div>
-  </section>
+  <section class="movie-year-highlights" aria-label="Destaques do ano" id="movieYearHighlights"></section>
 
   <section class="movie-library" aria-labelledby="libraryTitle">
     <div class="movie-library-heading">
       <div>
-        <h2 id="libraryTitle">Filmes vistos</h2>
-        <p id="movieCount">0 filmes assistidos e contando... (obs: deve tá faltando alguns kkkkkk)</p>
+        <h2 id="libraryTitle">Filmes vistos em 2023</h2>
+        <p id="movieCount">0 filmes assistidos em 2023</p>
       </div>
-      <button type="button" class="movie-clear-search" onclick="clearMovieSearch()">Limpar busca</button>
     </div>
     <div class="movie-grid" id="movieGrid"></div>
-  </section>
-
-  <section class="movie-year-navigation" aria-labelledby="movieYearsTitle">
-    <div class="movie-library-heading">
-      <div>
-        <h2 id="movieYearsTitle">Filmes por ano</h2>
-        <p>Vamo em busca de aumentar isso cada vez mais ao longo dos anos meu amor!!!.</p>
-      </div>
-    </div>
-    <div class="movie-year-grid" id="movieYearGrid"></div>
   </section>
 </main>
 
