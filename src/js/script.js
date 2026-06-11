@@ -5,22 +5,31 @@ let coupleName = 'Legué e Leozinho';
 let memories = [];
 let pendingPhotos = [];
 let pendingPhotoFiles = [];
+const MAX_MEMORY_IMAGE_BYTES = 10 * 1024 * 1024;
+const MAX_MEMORY_VIDEO_BYTES = 100 * 1024 * 1024;
+const SUPPORTED_MEMORY_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+const SUPPORTED_MEMORY_VIDEO_TYPES = ['video/mp4'];
+const SUPPORTED_MEMORY_FILE_TYPES = [...SUPPORTED_MEMORY_IMAGE_TYPES, ...SUPPORTED_MEMORY_VIDEO_TYPES];
 let currentCalendarDate = new Date(new Date().getFullYear(), new Date().getMonth(), 1); // Mês atual
 
 // ---- LOAD ----
 // Carrega apenas memórias e nome do casal (se houver)
 function mapSupabaseMemory(memory) {
-  const photos = (memory.memory_photos || [])
+  const media = (memory.memory_photos || [])
     .slice()
     .sort((a, b) => a.display_order - b.display_order)
-    .map(photo => photo.public_url || window.loveSupabase.getPublicUrl(photo.storage_path))
-    .filter(Boolean);
+    .map(photo => ({
+      url: photo.public_url || window.loveSupabase.getPublicUrl(photo.storage_path),
+      type: photo.media_type || 'image'
+    }))
+    .filter(item => item.url);
 
   return {
     id: memory.id,
     date: memory.memory_date,
     note: memory.note || '',
-    photos
+    media,
+    photos: media.filter(item => item.type === 'image').map(item => item.url)
   };
 }
 
@@ -29,11 +38,23 @@ async function loadState() {
     try {
       const { data, error } = await window.loveSupabase.client
         .from('memories')
-        .select('id, memory_date, note, created_at, memory_photos(storage_path, public_url, display_order)')
+        .select('id, memory_date, note, created_at, memory_photos(storage_path, public_url, media_type, display_order)')
         .order('memory_date', { ascending: false })
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        const { data: legacyData, error: legacyError } = await window.loveSupabase.client
+          .from('memories')
+          .select('id, memory_date, note, created_at, memory_photos(storage_path, public_url, display_order)')
+          .order('memory_date', { ascending: false })
+          .order('created_at', { ascending: false });
+
+        if (legacyError) throw error;
+        memories = (legacyData || []).map(mapSupabaseMemory);
+        renderMemories();
+        renderCalendar();
+        return;
+      }
       memories = (data || []).map(mapSupabaseMemory);
       renderMemories();
       renderCalendar();
@@ -57,6 +78,79 @@ function saveState() {
     localStorage.setItem('loveCoupleName', coupleName);
     localStorage.setItem('loveMemories', JSON.stringify(memories));
   } catch(e) {}
+}
+
+function createMemoryId() {
+  if (window.crypto && typeof window.crypto.randomUUID === 'function') {
+    return window.crypto.randomUUID();
+  }
+
+  return '10000000-1000-4000-8000-100000000000'.replace(/[018]/g, c =>
+    (c ^ window.crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+  );
+}
+
+function mediaTypeFromMime(mimeType) {
+  return mimeType && mimeType.startsWith('video/') ? 'video' : 'image';
+}
+
+function normalizeMemoryMedia(memory) {
+  if (Array.isArray(memory.media)) return memory.media;
+  return (memory.photos || []).map(photo => (
+    typeof photo === 'string' ? { url: photo, type: 'image' } : photo
+  )).filter(item => item && item.url);
+}
+
+function renderMemoryMediaItem(item, className = 'memory-carousel-media') {
+  if (item.type === 'video') {
+    return `<video class="${className}" src="${item.url}" controls preload="metadata" playsinline></video>`;
+  }
+
+  return `<img class="${className}" src="${item.url}" alt="Memoria" onclick="openLightbox('${item.url}', 'image')" style="cursor:pointer">`;
+}
+
+function validateMemoryFiles(files) {
+  const invalidFiles = files.filter(file => !SUPPORTED_MEMORY_FILE_TYPES.includes(file.type));
+  if (invalidFiles.length > 0) {
+    return `Alguns arquivos estao em um formato que o site nao consegue exibir/salvar. Use JPG, PNG, WEBP, GIF ou video MP4. Arquivo: ${invalidFiles[0].name}`;
+  }
+
+  const oversizedImage = files.find(file => mediaTypeFromMime(file.type) === 'image' && file.size > MAX_MEMORY_IMAGE_BYTES);
+  if (oversizedImage) {
+    return `A foto "${oversizedImage.name}" tem mais de 10 MB. Diminua a imagem e tente de novo.`;
+  }
+
+  const oversizedVideo = files.find(file => mediaTypeFromMime(file.type) === 'video' && file.size > MAX_MEMORY_VIDEO_BYTES);
+  if (oversizedVideo) {
+    return `O video "${oversizedVideo.name}" tem mais de 100 MB. Diminua o video e tente de novo.`;
+  }
+
+  return '';
+}
+
+async function removeUploadedPhotos(paths) {
+  if (!window.loveSupabase || !window.loveSupabase.isReady() || paths.length === 0) return;
+
+  try {
+    await window.loveSupabase.client.storage
+      .from(window.loveSupabase.storageBucket)
+      .remove(paths);
+  } catch (error) {
+    console.warn('Nao consegui limpar fotos enviadas apos erro.', error);
+  }
+}
+
+async function removeMemoryRow(id) {
+  if (!window.loveSupabase || !window.loveSupabase.isReady() || !id) return;
+
+  try {
+    await window.loveSupabase.client
+      .from('memories')
+      .delete()
+      .eq('id', id);
+  } catch (error) {
+    console.warn('Nao consegui limpar memoria apos erro.', error);
+  }
 }
 
 // ---- TIMER ----
@@ -106,10 +200,21 @@ function previewPhotos(input) {
   pendingPhotoFiles.forEach(file => {
     const reader = new FileReader();
     reader.onload = e => {
-      pendingPhotos.push(e.target.result);
-      const img = document.createElement('img');
-      img.src = e.target.result;
-      container.appendChild(img);
+      const media = {
+        url: e.target.result,
+        type: mediaTypeFromMime(file.type)
+      };
+      pendingPhotos.push(media);
+      const preview = document.createElement(media.type === 'video' ? 'video' : 'img');
+      preview.src = media.url;
+      preview.className = 'preview-media';
+      if (media.type === 'video') {
+        preview.controls = true;
+        preview.muted = true;
+        preview.playsInline = true;
+        preview.preload = 'metadata';
+      }
+      container.appendChild(preview);
     };
     reader.readAsDataURL(file);
   });
@@ -119,16 +224,38 @@ function previewPhotos(input) {
 async function addMemory() {
   const date = document.getElementById('memDate').value;
   const note = document.getElementById('memNote').value.trim();
-  if (!date && !note && pendingPhotos.length === 0) {
+  if (!date && !note && pendingPhotoFiles.length === 0) {
     alert('Preencha a data, a nota ou adicione fotos!');
     return;
   }
 
   if (window.loveSupabase && window.loveSupabase.isReady()) {
+    const validationError = validateMemoryFiles(pendingPhotoFiles);
+    if (validationError) {
+      alert(validationError);
+      return;
+    }
+
+    const memoryId = createMemoryId();
+    const uploadedPhotos = [];
+    let memoryInserted = false;
+
     try {
+      for (let index = 0; index < pendingPhotoFiles.length; index++) {
+        const uploaded = await window.loveSupabase.uploadImage(`memories/${memoryId}`, pendingPhotoFiles[index]);
+        uploadedPhotos.push({
+          memory_id: memoryId,
+          storage_path: uploaded.storage_path,
+          public_url: uploaded.public_url,
+          media_type: mediaTypeFromMime(pendingPhotoFiles[index].type),
+          display_order: index
+        });
+      }
+
       const { data: insertedMemory, error: memoryError } = await window.loveSupabase.client
         .from('memories')
         .insert({
+          id: memoryId,
           memory_date: date || new Date().toISOString().slice(0, 10),
           note
         })
@@ -136,22 +263,20 @@ async function addMemory() {
         .single();
 
       if (memoryError) throw memoryError;
+      memoryInserted = Boolean(insertedMemory);
 
-      if (pendingPhotoFiles.length > 0) {
-        const uploadedPhotos = [];
-        for (let index = 0; index < pendingPhotoFiles.length; index++) {
-          const uploaded = await window.loveSupabase.uploadImage(`memories/${insertedMemory.id}`, pendingPhotoFiles[index]);
-          uploadedPhotos.push({
-            memory_id: insertedMemory.id,
-            storage_path: uploaded.storage_path,
-            public_url: uploaded.public_url,
-            display_order: index
-          });
-        }
-
-        const { error: photosError } = await window.loveSupabase.client
+      if (uploadedPhotos.length > 0) {
+        let { error: photosError } = await window.loveSupabase.client
           .from('memory_photos')
           .insert(uploadedPhotos);
+
+        if (photosError && uploadedPhotos.every(photo => photo.media_type === 'image')) {
+          const legacyPhotos = uploadedPhotos.map(({ media_type, ...photo }) => photo);
+          const legacyInsert = await window.loveSupabase.client
+            .from('memory_photos')
+            .insert(legacyPhotos);
+          photosError = legacyInsert.error;
+        }
 
         if (photosError) throw photosError;
       }
@@ -160,16 +285,25 @@ async function addMemory() {
       resetMemoryForm();
       return;
     } catch (e) {
-      alert('Nao consegui salvar no Supabase agora. A memoria sera salva localmente neste navegador.');
+      await removeUploadedPhotos(uploadedPhotos.map(photo => photo.storage_path).filter(Boolean));
+      if (memoryInserted) await removeMemoryRow(memoryId);
+      alert('Nao consegui salvar essa memoria no Supabase. Nada foi salvo localmente para nao perder a sincronizacao. Tente novamente em instantes.');
       console.warn('Erro ao salvar memoria no Supabase.', e);
+      return;
     }
+  }
+
+  if (window.SUPABASE_CONFIG && window.SUPABASE_CONFIG.url) {
+    alert('O Supabase nao carregou agora, entao a memoria nao foi salva. Recarregue a pagina e tente novamente.');
+    return;
   }
 
   const memory = {
     id: Date.now(),
     date: date || new Date().toISOString().slice(0, 10),
     note: note,
-    photos: [...pendingPhotos]
+    media: [...pendingPhotos],
+    photos: pendingPhotos.filter(item => item.type === 'image').map(item => item.url)
   };
   memories.unshift(memory);
   saveState();
@@ -202,7 +336,9 @@ function renderMemories() {
 
   grid.innerHTML = memories.map(m => {
     const dateStr = m.date ? new Date(m.date + 'T12:00:00').toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' }) : '';
-    const photos = m.photos || [];
+    const media = normalizeMemoryMedia(m);
+    let mediaHtml = '';
+    const photos = media.map(item => item.url);
     let photosHtml = '';
 
     if (photos.length === 0) {
@@ -228,8 +364,17 @@ function renderMemories() {
       </div>`;
     }
 
+    mediaHtml = media.length > 0
+      ? `<div class="memory-carousel" aria-label="Carrossel de fotos e videos da memoria">
+          <div class="memory-carousel-track">
+            ${media.map(item => `<div class="memory-carousel-slide">${renderMemoryMediaItem(item)}</div>`).join('')}
+          </div>
+          ${media.length > 1 ? `<div class="memory-carousel-count">${media.length} arquivos</div>` : ''}
+        </div>`
+      : photosHtml;
+
     return `<div class="memory-card">
-      ${photosHtml}
+      ${mediaHtml}
       <div class="memory-info">
         <div class="memory-date">${dateStr}</div>
         ${m.note ? `<div class="memory-note">${m.note}</div>` : ''}
@@ -358,24 +503,33 @@ function showDayDetails(dateStr, dayMemories, day, month, year) {
     let contentHtml = '<div class="day-modal-items">';
     
     dayMemories.forEach(mem => {
+      const media = normalizeMemoryMedia(mem);
       // Se tem fotos
-      if (mem.photos && mem.photos.length > 0) {
+      if (false && mem.photos && mem.photos.length > 0) {
         contentHtml += '<div class="day-modal-photos-grid">';
         mem.photos.forEach(photo => {
           contentHtml += `<img src="${photo}" alt="Memória" onclick="openLightbox('${photo}')" style="cursor:pointer;">`;
         });
         contentHtml += '</div>';
       }
+
+      if (media.length > 0) {
+        contentHtml += '<div class="day-modal-media-carousel"><div class="memory-carousel-track">';
+        media.forEach(item => {
+          contentHtml += `<div class="memory-carousel-slide">${renderMemoryMediaItem(item)}</div>`;
+        });
+        contentHtml += '</div></div>';
+      }
       
       // Se tem apenas nota (sem fotos)
-      if (mem.note && (!mem.photos || mem.photos.length === 0)) {
+      if (mem.note && media.length === 0) {
         contentHtml += `<div class="day-modal-text-card">
           <div class="day-modal-text-note">${mem.note}</div>
         </div>`;
       }
       
       // Se tem fotos E nota, mostrar a nota também
-      if (mem.note && mem.photos && mem.photos.length > 0) {
+      if (mem.note && media.length > 0) {
         contentHtml += `<div class="day-modal-note-item">💬 ${mem.note}</div>`;
       }
     });
@@ -389,55 +543,6 @@ function showDayDetails(dateStr, dayMemories, day, month, year) {
 
 function closeDayModal() {
   document.getElementById('dayModal').classList.remove('open');
-}
-
-// ---- SPECIAL HEART POPUP ----
-const defaultSpecialHeartContent = {
-  title: 'Good amor?',
-  text: 'Amor fica esperta que vira e mexe vai passar uns cora\u00e7\u00f5es especiais (para voc\u00ea que \u00e9 muito especial), cuidado pra n\u00e3o perder!',
-  color: '#f5c542'
-};
-
-const specialHeartContents = [
-  {
-    title: 'Conte\u00fado especial',
-    text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-    color: '#ff7ab6'
-  },
-  {
-    title: 'Conte\u00fado especial',
-    text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio praesent libero sed cursus ante dapibus diam.',
-    color: '#62c96b'
-  },
-  {
-    title: 'Conte\u00fado especial',
-    text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis sagittis ipsum praesent mauris fusce nec tellus.',
-    color: '#ef4f5f'
-  }
-];
-
-function setSpecialHeartPopupContent(content) {
-  const popupContent = content || defaultSpecialHeartContent;
-  const title = document.getElementById('heartPopupTitle');
-  const text = document.querySelector('.heart-popup-content p');
-  const icon = document.querySelector('.heart-popup-icon svg');
-
-  title.textContent = popupContent.title;
-  text.textContent = popupContent.text;
-  icon.setAttribute('fill', popupContent.color);
-}
-
-function openSpecialHeartPopup(content) {
-  setSpecialHeartPopupContent(content);
-  const popup = document.getElementById('heartPopup');
-  popup.classList.add('open');
-  popup.setAttribute('aria-hidden', 'false');
-}
-
-function closeSpecialHeartPopup() {
-  const popup = document.getElementById('heartPopup');
-  popup.classList.remove('open');
-  popup.setAttribute('aria-hidden', 'true');
 }
 
 // ---- LIGHTBOX ----
@@ -469,52 +574,8 @@ function createHearts() {
   }
 }
 
-// ---- SPECIAL FLOATING HEARTS ----
-function createSpecialHeartsLayer() {
-  let layer = document.getElementById('specialHeartsLayer');
-  if (layer) return layer;
-
-  layer = document.createElement('div');
-  layer.id = 'specialHeartsLayer';
-  layer.className = 'special-hearts-layer';
-  document.body.appendChild(layer);
-  return layer;
-}
-
-function createSpecialHeart() {
-  const layer = createSpecialHeartsLayer();
-  const content = specialHeartContents[Math.floor(Math.random() * specialHeartContents.length)];
-  const heart = document.createElement('button');
-  const size = 34 + Math.random() * 22;
-  const left = 6 + Math.random() * 88;
-  const duration = 9 + Math.random() * 5;
-  const drift = Math.round((Math.random() * 80) - 40);
-
-  heart.type = 'button';
-  heart.className = 'special-heart-float';
-  heart.setAttribute('aria-label', 'Abrir conte\u00fado especial');
-  heart.style.cssText = `left:${left}%;--size:${size}px;--heart-color:${content.color};--drift:${drift}px;animation-duration:${duration}s;`;
-  heart.innerHTML = `<svg viewBox="0 0 24 24" fill="${content.color}" xmlns="http://www.w3.org/2000/svg">
-    <path d="M12 21C12 21 3 15 3 9C3 6.2 5.2 4 8 4C9.6 4 11 4.9 12 6.2C13 4.9 14.4 4 16 4C18.8 4 21 6.2 21 9C21 15 12 21 12 21Z"/>
-  </svg>`;
-
-  heart.addEventListener('click', () => {
-    openSpecialHeartPopup(content);
-    heart.remove();
-  });
-  heart.addEventListener('animationend', () => heart.remove());
-
-  layer.appendChild(heart);
-}
-
-function startSpecialHearts() {
-  setTimeout(createSpecialHeart, 25000);
-  setInterval(createSpecialHeart, 90000);
-}
-
 // ---- INIT ----
 createHearts();
-startSpecialHearts();
 loadState();
 updateTimer();
 renderCalendar();

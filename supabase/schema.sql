@@ -8,8 +8,8 @@ values (
   'love-photos',
   'love-photos',
   true,
-  10485760,
-  array['image/jpeg', 'image/png', 'image/webp', 'image/gif']
+  104857600,
+  array['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'video/mp4']
 )
 on conflict (id) do update
 set public = excluded.public,
@@ -28,6 +28,7 @@ create table if not exists public.memory_photos (
   memory_id uuid not null references public.memories(id) on delete cascade,
   storage_path text not null,
   public_url text,
+  media_type text not null default 'image' check (media_type in ('image', 'video')),
   display_order integer not null default 0,
   created_at timestamptz not null default now()
 );
@@ -112,6 +113,26 @@ values
   ('leozinho', 'Coberto com a RazÃ£o', 4, '#8cc8e4', 2),
   ('leozinho', 'RomÃ¢ntico', 12, '#6cc484', 3)
 on conflict (profile_slug, name) do nothing;
+
+delete from public.profile_photos
+where profile_slug = 'legue';
+
+insert into public.profile_photos (profile_slug, storage_path, display_order)
+values
+  ('legue', 'profile/legue/legue-1.jpeg', 1),
+  ('legue', 'profile/legue/legue-2.jpeg', 2),
+  ('legue', 'profile/legue/legue-3.jpeg', 3),
+  ('legue', 'profile/legue/legue-4.jpeg', 4);
+
+delete from public.profile_photos
+where profile_slug = 'leozinho';
+
+insert into public.profile_photos (profile_slug, storage_path, display_order)
+values
+  ('leozinho', 'profile/leozinho/leozinho-1.jpeg', 1),
+  ('leozinho', 'profile/leozinho/leozinho-2.jpeg', 2),
+  ('leozinho', 'profile/leozinho/leozinho-3.jpeg', 3),
+  ('leozinho', 'profile/leozinho/leozinho-4.jpeg', 4);
 
 create index if not exists memories_memory_date_idx on public.memories(memory_date desc);
 create index if not exists memory_photos_memory_id_idx on public.memory_photos(memory_id);

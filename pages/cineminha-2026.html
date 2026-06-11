@@ -3,22 +3,22 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cineminha 2024</title>
-<link href="src/css/style.css" rel="stylesheet">
+<title>Cineminha 2026</title>
+<link href="../src/css/style.css" rel="stylesheet">
 </head>
 <body>
 
 <div class="hearts-bg" id="heartsBg"></div>
 
-<main class="container cineminha-page movie-year-page" data-movie-year="2024">
-  <a class="profile-back" href="./cineminha.html">&lt; Back</a>
+<main class="container cineminha-page movie-year-page" data-movie-year="2026">
+  <a class="profile-back" href="./cineminha.html">Back</a>
 
   <header class="cineminha-header">
     <div class="title-heart">
       <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M18 31 C18 31 4 22 4 13 C4 8 8 5 12 5 C14.5 5 17 6.5 18 9 C19 6.5 21.5 5 24 5 C28 5 32 8 32 13 C32 22 18 31 18 31Z" fill="#7ec8e3" opacity="0.8"/>
       </svg>
-      <h1>Filmes de 2024</h1>
+      <h1>Filmes de 2026</h1>
       <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M18 31 C18 31 4 22 4 13 C4 8 8 5 12 5 C14.5 5 17 6.5 18 9 C19 6.5 21.5 5 24 5 C28 5 32 8 32 13 C32 22 18 31 18 31Z" fill="#7ec8e3" opacity="0.8"/>
       </svg>
@@ -31,8 +31,8 @@
   <section class="movie-library" aria-labelledby="libraryTitle">
     <div class="movie-library-heading">
       <div>
-        <h2 id="libraryTitle">Filmes vistos em 2024</h2>
-        <p id="movieCount">0 filmes assistidos em 2024</p>
+        <h2 id="libraryTitle">Filmes vistos em 2026</h2>
+        <p id="movieCount">0 filmes assistidos em 2026</p>
       </div>
     </div>
     <div class="movie-grid" id="movieGrid"></div>
@@ -41,7 +41,11 @@
 
 <div class="movie-rating-modal" id="movieRatingModal" onclick="closeMovieRatingModal()" aria-hidden="true">
   <div class="movie-rating-modal-content" onclick="event.stopPropagation()" role="dialog" aria-modal="true" aria-labelledby="movieRatingTitle">
-    <button class="movie-rating-modal-close" type="button" onclick="closeMovieRatingModal()" aria-label="Fechar">x</button>
+    <button class="movie-rating-modal-close" type="button" onclick="closeMovieRatingModal()" aria-label="Fechar"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+  <path d="M12 22C17.5 22 22 17.5 22 12C22 6.5 17.5 2 12 2C6.5 2 2 6.5 2 12C2 17.5 6.5 22 12 22Z" />
+  <path d="M8.5 8.5L15.5 15.5" />
+  <path d="M15.5 8.5L8.5 15.5" />
+</svg></button>
     <div class="movie-rating-modal-main">
       <div class="movie-rating-modal-poster" id="movieRatingPoster"></div>
       <div class="movie-rating-modal-info">
@@ -80,9 +84,28 @@
   </div>
 </div>
 
+
+<div class="heart-popup" id="heartPopup" onclick="closeSpecialHeartPopup()" aria-hidden="true">
+  <div class="heart-popup-content" onclick="event.stopPropagation()" role="dialog" aria-modal="true" aria-labelledby="heartPopupTitle">
+    <button class="heart-popup-close" type="button" onclick="closeSpecialHeartPopup()" aria-label="Fechar"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+  <path d="M12 22C17.5 22 22 17.5 22 12C22 6.5 17.5 2 12 2C6.5 2 2 6.5 2 12C2 17.5 6.5 22 12 22Z" />
+  <path d="M8.5 8.5L15.5 15.5" />
+  <path d="M15.5 8.5L8.5 15.5" />
+</svg></button>
+    <div class="heart-popup-icon">
+      <svg viewBox="0 0 24 24" fill="#facc15" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 21C12 21 3 15 3 9C3 6.2 5.2 4 8 4C9.6 4 11 4.9 12 6.2C13 4.9 14.4 4 16 4C18.8 4 21 6.2 21 9C21 15 12 21 12 21Z"/>
+      </svg>
+    </div>
+    <h3 id="heartPopupTitle">Good amor?</h3>
+    <p>Amor fica esperta que vira e mexe vai passar uns corações especiais para você que é muito especial, cuidado pra não perder!</p>
+  </div>
+</div>
+<script src="../src/js/back-buttons.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="src/js/supabase-config.js"></script>
-<script src="src/js/supabase-client.js"></script>
-<script src="src/js/cineminha.js"></script>
+<script src="../src/js/supabase-config.js"></script>
+<script src="../src/js/supabase-client.js"></script>
+<script src="../src/js/special-hearts.js"></script>
+<script src="../src/js/cineminha.js"></script>
 </body>
 </html>
