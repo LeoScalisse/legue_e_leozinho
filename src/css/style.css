@@ -178,18 +178,36 @@ h1 a {
 .profile-back {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   margin-bottom: 1rem;
-  color: var(--blue-dark);
+  padding: 12.5px 30px;
+  border: 0;
+  border-radius: 100px;
+  background-color: #2ba8fb;
+  color: #ffffff;
   font-size: 0.9rem;
   font-weight: 700;
   text-decoration: none;
+  transition: all 0.5s;
+  -webkit-transition: all 0.5s;
 }
 
 .profile-back:hover,
 .profile-back:focus-visible {
-  color: var(--blue-mid);
-  text-decoration: underline;
-  text-underline-offset: 0.18em;
+  background-color: #6fc5ff;
+  box-shadow: 0 0 20px #6fc5ff50;
+  color: #ffffff;
+  outline: none;
+  text-decoration: none;
+  transform: scale(1.1);
+}
+
+.profile-back:active {
+  background-color: #3d94cf;
+  box-shadow: none;
+  transform: scale(0.98);
+  transition: all 0.25s;
+  -webkit-transition: all 0.25s;
 }
 
 .profile-content {
