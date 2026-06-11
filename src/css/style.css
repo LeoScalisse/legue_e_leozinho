@@ -1853,6 +1853,419 @@ h1 a {
   transform: translateY(-1px);
 }
 
+/* ---- LOVE MAP ---- */
+.love-map-page {
+  max-width: 1080px;
+}
+
+.love-map-teaser {
+  margin-top: -0.7rem;
+}
+
+.love-map-tools,
+.love-map-shell,
+.love-places-list {
+  background: var(--card);
+  border: 1.5px solid var(--blue-light);
+  border-radius: 18px;
+  box-shadow: var(--shadow);
+  padding: 1.25rem;
+  margin-bottom: 1.3rem;
+  backdrop-filter: blur(8px);
+}
+
+.love-map-search-row {
+  display: flex;
+  gap: 0.65rem;
+  align-items: center;
+  margin-top: 0.8rem;
+}
+
+.love-map-search-row input,
+.love-place-form input,
+.love-place-form textarea,
+.love-place-edit-form input,
+.love-place-edit-form textarea {
+  min-width: 0;
+  border: 1.5px solid var(--blue-light);
+  border-radius: 12px;
+  background: var(--white);
+  color: var(--text);
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.92rem;
+  outline: none;
+  padding: 0.62rem 0.75rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.love-map-search-row input {
+  flex: 1;
+  width: 100%;
+}
+
+.love-map-search-row button,
+.love-place-save,
+.love-place-card button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 12px;
+  background: var(--blue-mid);
+  color: var(--white);
+  padding: 0.65rem 1rem;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+  white-space: nowrap;
+}
+
+.love-map-search-row button:hover,
+.love-place-save:hover {
+  background: var(--blue-dark);
+  transform: translateY(-1px);
+}
+
+.love-map-search-row input:focus,
+.love-place-form input:focus,
+.love-place-form textarea:focus,
+.love-place-edit-form input:focus,
+.love-place-edit-form textarea:focus {
+  border-color: var(--blue-mid);
+  box-shadow: 0 0 0 3px rgba(126, 200, 227, 0.22);
+}
+
+.love-map-status {
+  min-height: 1.3rem;
+  margin-top: 0.75rem;
+  color: var(--text-soft);
+  font-size: 0.9rem;
+}
+
+.love-map-results {
+  display: grid;
+  gap: 0.55rem;
+  margin-top: 0.75rem;
+}
+
+.love-place-result {
+  display: flex;
+  flex-direction: column;
+  gap: 0.18rem;
+  width: 100%;
+  border: 1.5px solid var(--blue-light);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.7);
+  color: var(--text);
+  cursor: pointer;
+  font-family: 'Nunito', sans-serif;
+  padding: 0.7rem 0.8rem;
+  text-align: left;
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+}
+
+.love-place-result:hover,
+.love-place-result:focus-visible {
+  border-color: var(--blue-mid);
+  box-shadow: 0 8px 24px rgba(90, 160, 200, 0.14);
+  outline: none;
+  transform: translateY(-1px);
+}
+
+.love-place-result strong {
+  color: var(--blue-dark);
+  font-size: 0.95rem;
+}
+
+.love-place-result span {
+  color: var(--text-soft);
+  font-size: 0.84rem;
+  line-height: 1.35;
+}
+
+.love-place-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.8rem;
+  margin-top: 1rem;
+}
+
+.love-place-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  color: var(--text-soft);
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.love-place-experience,
+.love-place-save {
+  grid-column: 1 / -1;
+}
+
+.love-place-form textarea,
+.love-place-edit-form textarea {
+  resize: vertical;
+}
+
+.love-map-canvas {
+  width: 100%;
+  height: min(64vh, 620px);
+  min-height: 420px;
+  overflow: hidden;
+  border: 1.5px solid var(--blue-light);
+  border-radius: 16px;
+  background: var(--bg2);
+}
+
+.love-map-attribution {
+  color: var(--text-soft);
+  font-size: 0.78rem;
+  line-height: 1.4;
+  margin-top: 0.65rem;
+}
+
+.love-map-marker {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border: 2px solid var(--white);
+  border-radius: 999px;
+  background: var(--blue-mid);
+  box-shadow: 0 7px 20px rgba(30, 74, 98, 0.28);
+  cursor: pointer;
+}
+
+.love-map-marker span {
+  width: 10px;
+  height: 10px;
+  transform: rotate(45deg);
+  background: #f7d9e9;
+}
+
+.love-map-preview-marker {
+  background: var(--verde-claro);
+}
+
+.love-map-popup-card {
+  color: var(--text);
+  font-family: 'Nunito', sans-serif;
+}
+
+.love-map-popup-card h3 {
+  color: var(--blue-dark);
+  font-family: 'Playfair Display', serif;
+  font-size: 1.05rem;
+  line-height: 1.15;
+  margin-bottom: 0.35rem;
+}
+
+.love-map-popup-card p {
+  font-size: 0.86rem;
+  line-height: 1.45;
+  margin-bottom: 0.45rem;
+}
+
+.love-map-popup-date,
+.love-map-popup-card small {
+  color: var(--text-soft);
+}
+
+.love-map-popup-card button {
+  border: none;
+  border-radius: 10px;
+  background: var(--blue-mid);
+  color: var(--white);
+  cursor: pointer;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 800;
+  margin-top: 0.35rem;
+  padding: 0.42rem 0.68rem;
+}
+
+.love-places-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 0.9rem;
+}
+
+.love-place-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1.5px solid var(--blue-light);
+  border-radius: 16px;
+  cursor: pointer;
+  padding: 0.9rem;
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+}
+
+.love-place-card:hover,
+.love-place-card:focus-visible {
+  border-color: var(--blue-mid);
+  box-shadow: 0 10px 32px rgba(90, 160, 200, 0.18);
+  outline: none;
+  transform: translateY(-3px);
+}
+
+.love-place-card h3 {
+  color: var(--blue-dark);
+  font-size: 1rem;
+  line-height: 1.2;
+}
+
+.love-place-card p {
+  color: var(--text);
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.love-place-card div p,
+.love-place-card small {
+  color: var(--text-soft);
+  font-size: 0.82rem;
+}
+
+.love-place-card button {
+  align-self: flex-start;
+  background: var(--white);
+  border: 1.5px solid #ff9bb0;
+  color: #d8526c;
+  padding: 0.42rem 0.75rem;
+}
+
+.love-place-card button:hover {
+  background: #fff1f4;
+  transform: translateY(-1px);
+}
+
+.love-place-name-card {
+  align-items: center;
+  justify-content: center;
+  min-height: 78px;
+  text-align: center;
+}
+
+.love-place-name-card h3 {
+  font-size: 1.05rem;
+}
+
+.love-place-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 190;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: rgba(30, 74, 98, 0.42);
+  backdrop-filter: blur(3px);
+}
+
+.love-place-modal.open {
+  display: flex;
+}
+
+.love-place-modal-content {
+  position: relative;
+  width: min(560px, 94vw);
+  max-height: 88vh;
+  overflow-y: auto;
+  background: var(--white);
+  border: 1.5px solid var(--blue-light);
+  border-radius: 20px;
+  box-shadow: 0 12px 48px rgba(30, 74, 98, 0.24);
+  padding: 1.25rem;
+}
+
+.love-place-modal-close {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  border: none;
+  background: transparent;
+  color: var(--text-soft);
+  cursor: pointer;
+  font-size: 1.25rem;
+  font-weight: 800;
+}
+
+.love-place-edit-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.love-place-edit-form h2 {
+  grid-column: 1 / -1;
+  color: var(--blue-dark);
+  font-family: 'Playfair Display', serif;
+  font-size: 1.35rem;
+  line-height: 1.18;
+  margin: 0 1.7rem 0.2rem 0;
+}
+
+.love-place-edit-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.32rem;
+  color: var(--text-soft);
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.love-place-modal-actions {
+  display: flex;
+  flex-wrap: wrap;
+  grid-column: 1 / -1;
+  gap: 0.6rem;
+  align-items: center;
+}
+
+.love-place-map-button,
+.love-place-delete-button {
+  border-radius: 12px;
+  cursor: pointer;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 800;
+  padding: 0.62rem 1rem;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.love-place-map-button {
+  border: 1.5px solid var(--blue-light);
+  background: var(--bg2);
+  color: var(--blue-dark);
+}
+
+.love-place-map-button:hover {
+  background: var(--blue-light);
+  color: var(--white);
+  transform: translateY(-1px);
+}
+
+.love-place-delete-button {
+  border: 1.5px solid #ff9bb0;
+  background: var(--white);
+  color: #d8526c;
+}
+
+.love-place-delete-button:hover {
+  background: #fff1f4;
+  transform: translateY(-1px);
+}
+
 /* ---- DAY MODAL ---- */
 .day-modal {
   display: none;
@@ -2014,7 +2427,7 @@ h1 a {
 }
 
 @media (max-width: 520px) {
-  .timer-num { min-width: 60px; font-size: 1.9rem; padding: 10px 8px 8px; }     
+  .timer-num { min-width: 60px; font-size: 1.9rem; padding: 10px 8px 8px; }
   .timer-sep { font-size: 1.5rem; }
   .add-row { flex-direction: column; }
   .add-row input, .upload-btn, .btn-add-memory { width: 100%; }
@@ -2087,6 +2500,24 @@ h1 a {
     grid-template-columns: 1fr;
   }
 
+  .love-map-search-row,
+  .love-place-form,
+  .love-place-edit-form {
+    grid-template-columns: 1fr;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .love-map-search-row button,
+  .love-place-save {
+    width: 100%;
+  }
+
+  .love-map-canvas {
+    height: 62vh;
+    min-height: 340px;
+  }
+
   .movie-year-grid,
   .movie-year-highlights {
     grid-template-columns: 1fr;
@@ -2104,24 +2535,24 @@ h1 a {
     width: 64px;
     min-height: 96px;
   }
-  
+
   .calendar-days {
     gap: 0.3rem;
   }
-  
+
   .day-modal-content {
     padding: 1.5rem;
   }
-  
+
   #dayModalTitle {
     font-size: 1.1rem;
   }
-  
+
   .day-modal-photos-grid {
     grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
     gap: 0.5rem;
   }
-  
+
   .day-modal-photos-grid img {
     height: 80px;
   }

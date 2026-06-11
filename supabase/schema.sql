@@ -59,6 +59,19 @@ create table if not exists public.movie_ratings (
   primary key (movie_id, person_slug)
 );
 
+create table if not exists public.love_places (
+  id uuid primary key default gen_random_uuid(),
+  name text not null,
+  address text not null,
+  experience text not null,
+  visited_at date,
+  latitude numeric not null,
+  longitude numeric not null,
+  osm_id text,
+  osm_type text,
+  created_at timestamptz not null default now()
+);
+
 create table if not exists public.profiles (
   slug text primary key check (slug in ('legue', 'leozinho')),
   display_name text not null,
@@ -87,23 +100,24 @@ create table if not exists public.profile_attributes (
 );
 
 insert into public.profiles (slug, display_name)
-values ('legue', 'Legué'), ('leozinho', 'Leozinho')
+values ('legue', 'LeguÃ©'), ('leozinho', 'Leozinho')
 on conflict (slug) do nothing;
 
 insert into public.profile_attributes (profile_slug, name, value, base_color, display_order)
 values
   ('legue', 'Beleza', 7, '#fe8ce4', 1),
-  ('legue', 'Coberto com a Razão', 4, '#8cc8e4', 2),
-  ('legue', 'Romântico', 12, '#6cc484', 3),
+  ('legue', 'Coberto com a RazÃ£o', 4, '#8cc8e4', 2),
+  ('legue', 'RomÃ¢ntico', 12, '#6cc484', 3),
   ('leozinho', 'Beleza', 7, '#fe8ce4', 1),
-  ('leozinho', 'Coberto com a Razão', 4, '#8cc8e4', 2),
-  ('leozinho', 'Romântico', 12, '#6cc484', 3)
+  ('leozinho', 'Coberto com a RazÃ£o', 4, '#8cc8e4', 2),
+  ('leozinho', 'RomÃ¢ntico', 12, '#6cc484', 3)
 on conflict (profile_slug, name) do nothing;
 
 create index if not exists memories_memory_date_idx on public.memories(memory_date desc);
 create index if not exists memory_photos_memory_id_idx on public.memory_photos(memory_id);
 create index if not exists movies_created_at_idx on public.movies(created_at desc);
 create index if not exists movie_ratings_movie_id_idx on public.movie_ratings(movie_id);
+create index if not exists love_places_visited_at_idx on public.love_places(visited_at desc);
 create index if not exists profile_attributes_slug_order_idx on public.profile_attributes(profile_slug, display_order);
 create index if not exists profile_photos_slug_order_idx on public.profile_photos(profile_slug, display_order);
 
@@ -111,6 +125,7 @@ alter table public.memories enable row level security;
 alter table public.memory_photos enable row level security;
 alter table public.movies enable row level security;
 alter table public.movie_ratings enable row level security;
+alter table public.love_places enable row level security;
 alter table public.profiles enable row level security;
 alter table public.profile_photos enable row level security;
 alter table public.profile_attributes enable row level security;
@@ -150,6 +165,15 @@ create policy "public read movie ratings" on public.movie_ratings for select usi
 create policy "public insert movie ratings" on public.movie_ratings for insert with check (true);
 create policy "public update movie ratings" on public.movie_ratings for update using (true) with check (true);
 create policy "public delete movie ratings" on public.movie_ratings for delete using (true);
+
+drop policy if exists "public read love places" on public.love_places;
+drop policy if exists "public insert love places" on public.love_places;
+drop policy if exists "public update love places" on public.love_places;
+drop policy if exists "public delete love places" on public.love_places;
+create policy "public read love places" on public.love_places for select using (true);
+create policy "public insert love places" on public.love_places for insert with check (true);
+create policy "public update love places" on public.love_places for update using (true) with check (true);
+create policy "public delete love places" on public.love_places for delete using (true);
 
 drop policy if exists "public read profiles" on public.profiles;
 drop policy if exists "public update profiles" on public.profiles;

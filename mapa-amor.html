@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mapa do nosso amor</title>
+<link href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" rel="stylesheet">
+<link href="src/css/style.css" rel="stylesheet">
+</head>
+<body>
+
+<div class="hearts-bg" id="heartsBg"></div>
+
+<main class="container love-map-page">
+  <a class="profile-back" href="./index.html">&lt; Voltar</a>
+
+  <header class="cineminha-header">
+    <div class="title-heart">
+      <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M18 31 C18 31 4 22 4 13 C4 8 8 5 12 5 C14.5 5 17 6.5 18 9 C19 6.5 21.5 5 24 5 C28 5 32 8 32 13 C32 22 18 31 18 31Z" fill="#7ec8e3" opacity="0.8"/>
+      </svg>
+      <h1>Mapa do nosso amor</h1>
+      <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M18 31 C18 31 4 22 4 13 C4 8 8 5 12 5 C14.5 5 17 6.5 18 9 C19 6.5 21.5 5 24 5 C28 5 32 8 32 13 C32 22 18 31 18 31Z" fill="#7ec8e3" opacity="0.8"/>
+      </svg>
+    </div>
+    <p class="subtitle">Assim como MatuÃª disse em anos Luz: Vamo dominar o muuundo</p>
+  </header>
+
+  <section class="love-map-tools" aria-labelledby="loveMapAddTitle">
+    <div class="movie-library-heading">
+      <div>
+        <h2 id="loveMapAddTitle">Adicionar lugar</h2>
+        <p> EndereÃ§o ou nome do lugar</p>
+      </div>
+    </div>
+
+    <div class="love-map-search-row">
+      <input type="search" id="placeSearchInput" placeholder="Ex: Avenida Paulista(obs: saudades Paulista avenue)">
+      <button type="button" onclick="searchLovePlace()">Buscar</button>
+    </div>
+    <div class="love-map-status" id="placeSearchStatus"></div>
+    <div class="love-map-results" id="placeSearchResults"></div>
+
+    <form class="love-place-form" onsubmit="saveLovePlace(event)">
+      <input type="hidden" id="placeLatitude">
+      <input type="hidden" id="placeLongitude">
+      <label>
+        Nome do lugar
+        <input type="text" id="placeName" placeholder="Nome que vai aparecer no mapa" required>
+      </label>
+      <label>
+        EndereÃ§o encontrado
+        <input type="text" id="placeAddress" placeholder="Escolha um resultado da busca" required>
+      </label>
+      <label>
+        Quando fomos
+        <input type="date" id="placeVisitedAt">
+      </label>
+      <label class="love-place-experience">
+        Nossa experiÃªncia
+        <textarea id="placeExperience" rows="4" placeholder="O que aconteceu nesse lugar?" required></textarea>
+      </label>
+      <button type="submit" class="love-place-save">Fincar nossa bandeira no mapa</button>
+    </form>
+  </section>
+
+  <section class="love-map-shell" aria-labelledby="loveMapTitle">
+    <div class="movie-library-heading">
+      <div>
+        <h2 id="loveMapTitle">Nossos lugares</h2>
+        <p id="lovePlacesCount">0 lugares salvos no mapa</p>
+      </div>
+    </div>
+    <div class="love-map-canvas" id="loveMap"></div>
+    <p class="love-map-attribution">Mapa por CARTO/MapLibre. Busca de lugares por OpenStreetMap Nominatim.</p>
+  </section>
+
+  <section class="love-places-list" aria-labelledby="lovePlacesListTitle">
+    <div class="movie-library-heading">
+      <div>
+        <h2 id="lovePlacesListTitle">Lugares salvos</h2>
+      </div>
+    </div>
+    <div class="love-places-grid" id="lovePlacesGrid"></div>
+  </section>
+</main>
+
+<div class="love-place-modal" id="lovePlaceModal" onclick="closeLovePlaceModal()" aria-hidden="true">
+  <div class="love-place-modal-content" onclick="event.stopPropagation()" role="dialog" aria-modal="true" aria-labelledby="lovePlaceModalTitle">
+    <button class="love-place-modal-close" type="button" onclick="closeLovePlaceModal()" aria-label="Fechar">x</button>
+    <form class="love-place-edit-form" onsubmit="saveLovePlaceEdit(event)">
+      <h2 id="lovePlaceModalTitle">Editar lugar</h2>
+      <label>
+        Nome do lugar
+        <input type="text" id="editPlaceName" required>
+      </label>
+      <label>
+        EndereÃ§o
+        <input type="text" id="editPlaceAddress" required>
+      </label>
+      <label>
+        Quando fomos
+        <input type="date" id="editPlaceVisitedAt">
+      </label>
+      <label class="love-place-experience">
+        Nossa experiÃªncia
+        <textarea id="editPlaceExperience" rows="5" required></textarea>
+      </label>
+      <div class="love-place-modal-actions">
+        <button type="submit" class="love-place-save">Salvar alteraÃ§Ãµes</button>
+        <button type="button" class="love-place-map-button" onclick="focusActiveLovePlaceOnMap()">Ver no mapa</button>
+        <button type="button" class="love-place-delete-button" onclick="deleteActiveLovePlace()">Excluir</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+<script src="src/js/supabase-config.js"></script>
+<script src="src/js/supabase-client.js"></script>
+<script src="src/js/love-map.js"></script>
+</body>
+</html>
