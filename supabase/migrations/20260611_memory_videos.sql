@@ -3,7 +3,7 @@ add column if not exists media_type text not null default 'image'
 check (media_type in ('image', 'video'));
 
 update storage.buckets
-set file_size_limit = 104857600,
+set file_size_limit = 31457280,
     allowed_mime_types = array[
       'image/jpeg',
       'image/png',

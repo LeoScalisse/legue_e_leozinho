@@ -3056,10 +3056,74 @@ h1 a {
 }
 
 @media (max-width: 520px) {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    min-height: 100dvh;
+  }
+
+  .container,
+  .profile-container,
+  .cineminha-page,
+  .love-map-page,
+  .certificate-page {
+    width: min(100%, 100vw);
+    padding-left: 0.9rem;
+    padding-right: 0.9rem;
+  }
+
+  input,
+  textarea,
+  select,
+  button {
+    font-size: 16px;
+  }
+
   .timer-num { min-width: 60px; font-size: 1.9rem; padding: 10px 8px 8px; }
   .timer-sep { font-size: 1.5rem; }
   .add-row { flex-direction: column; }
   .add-row input, .upload-btn, .btn-add-memory { width: 100%; }
+
+  .timer-blocks {
+    gap: 0.35rem;
+  }
+
+  .timer-unit {
+    min-width: 0;
+  }
+
+  .section-title,
+  .title-heart {
+    flex-wrap: wrap;
+  }
+
+  .memories-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .memory-carousel-slide {
+    flex-basis: min(78vw, 280px);
+  }
+
+  .preview-imgs {
+    max-width: 100%;
+  }
+
+  .heart-popup-content,
+  .movie-rating-modal-content,
+  .love-place-modal-content,
+  .day-modal-content {
+    width: min(94vw, 680px);
+    max-height: calc(100dvh - 1.2rem);
+    overflow-y: auto;
+  }
+
+  .profile-carousel-track,
+  .memory-carousel-track {
+    scroll-padding-inline: 0.75rem;
+  }
 
   .characteristic-create-grid {
     grid-template-columns: 1fr;
@@ -3184,5 +3248,41 @@ h1 a {
 
   .day-modal-photos-grid img {
     height: 80px;
+  }
+}
+
+@media (max-width: 380px) {
+  .timer-card,
+  .add-memory-card,
+  .memory-info,
+  .cineminha-teaser,
+  .movie-search-card,
+  .love-place-form,
+  .love-place-list,
+  .certificate-card {
+    padding-left: 0.85rem;
+    padding-right: 0.85rem;
+  }
+
+  .timer-num {
+    min-width: 48px;
+    font-size: 1.55rem;
+  }
+
+  .timer-unit-label {
+    font-size: 0.68rem;
+  }
+
+  .calendar-day {
+    min-height: 42px;
+    padding: 0.3rem 0.15rem;
+  }
+
+  .calendar-day-number {
+    font-size: 0.78rem;
+  }
+
+  .memory-carousel-slide {
+    flex-basis: 74vw;
   }
 }

@@ -8,7 +8,7 @@ values (
   'love-photos',
   'love-photos',
   true,
-  104857600,
+  31457280,
   array['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'video/mp4']
 )
 on conflict (id) do update

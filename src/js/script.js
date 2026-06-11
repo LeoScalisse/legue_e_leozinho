@@ -6,7 +6,7 @@ let memories = [];
 let pendingPhotos = [];
 let pendingPhotoFiles = [];
 const MAX_MEMORY_IMAGE_BYTES = 10 * 1024 * 1024;
-const MAX_MEMORY_VIDEO_BYTES = 100 * 1024 * 1024;
+const MAX_MEMORY_VIDEO_BYTES = 30 * 1024 * 1024;
 const SUPPORTED_MEMORY_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
 const SUPPORTED_MEMORY_VIDEO_TYPES = ['video/mp4'];
 const SUPPORTED_MEMORY_FILE_TYPES = [...SUPPORTED_MEMORY_IMAGE_TYPES, ...SUPPORTED_MEMORY_VIDEO_TYPES];
@@ -122,7 +122,7 @@ function validateMemoryFiles(files) {
 
   const oversizedVideo = files.find(file => mediaTypeFromMime(file.type) === 'video' && file.size > MAX_MEMORY_VIDEO_BYTES);
   if (oversizedVideo) {
-    return `O video "${oversizedVideo.name}" tem mais de 100 MB. Diminua o video e tente de novo.`;
+    return `O video "${oversizedVideo.name}" tem mais de 30 MB. Diminua o video e tente de novo.`;
   }
 
   return '';
