@@ -422,11 +422,25 @@
       <path d="M12 21C12 21 3 15 3 9C3 6.2 5.2 4 8 4C9.6 4 11 4.9 12 6.2C13 4.9 14.4 4 16 4C18.8 4 21 6.2 21 9C21 15 12 21 12 21Z"/>
     </svg>`;
 
-    heart.addEventListener('click', () => {
+    function activateHeart(event) {
+      if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+      if (!heart.isConnected || heart.dataset.opened === 'true') return;
+      heart.dataset.opened = 'true';
+      heart.style.pointerEvents = 'none';
+      heart.style.animationPlayState = 'paused';
       openSpecialHeartPopup(content);
       heart.remove();
+    }
+
+    heart.addEventListener('pointerdown', activateHeart);
+    heart.addEventListener('touchstart', activateHeart, { passive: false });
+    heart.addEventListener('click', activateHeart);
+    heart.addEventListener('animationend', () => {
+      if (heart.dataset.opened !== 'true') heart.remove();
     });
-    heart.addEventListener('animationend', () => heart.remove());
 
     layer.appendChild(heart);
   }

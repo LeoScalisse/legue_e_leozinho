@@ -101,17 +101,17 @@ create table if not exists public.profile_attributes (
 );
 
 insert into public.profiles (slug, display_name)
-values ('legue', 'LeguÃ©'), ('leozinho', 'Leozinho')
+values ('legue', 'Legué'), ('leozinho', 'Leozinho')
 on conflict (slug) do nothing;
 
 insert into public.profile_attributes (profile_slug, name, value, base_color, display_order)
 values
   ('legue', 'Beleza', 7, '#fe8ce4', 1),
-  ('legue', 'Coberto com a RazÃ£o', 4, '#8cc8e4', 2),
-  ('legue', 'RomÃ¢ntico', 12, '#6cc484', 3),
+  ('legue', 'Coberto com a Razão', 4, '#8cc8e4', 2),
+  ('legue', 'Romântico', 12, '#6cc484', 3),
   ('leozinho', 'Beleza', 7, '#fe8ce4', 1),
-  ('leozinho', 'Coberto com a RazÃ£o', 4, '#8cc8e4', 2),
-  ('leozinho', 'RomÃ¢ntico', 12, '#6cc484', 3)
+  ('leozinho', 'Coberto com a Razão', 4, '#8cc8e4', 2),
+  ('leozinho', 'Romântico', 12, '#6cc484', 3)
 on conflict (profile_slug, name) do nothing;
 
 delete from public.profile_photos

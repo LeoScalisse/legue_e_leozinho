@@ -185,7 +185,7 @@ async function searchMovies() {
   }
 
   if (!query) {
-    setMovieSearchStatus('Digite o tÃ­tulo do filme.');
+    setMovieSearchStatus('Digite o título do filme.');
     return;
   }
 
@@ -238,7 +238,7 @@ async function addMovieFromApi(movieId) {
   }
 
   if (cineminhaMovies.some(movie => movie.apiId === movieId)) {
-    setMovieSearchStatus('Esse filme jÃ¡ estÃ¡ no cineminha.');
+    setMovieSearchStatus('Esse filme já está no cineminha.');
     return;
   }
 
@@ -252,7 +252,7 @@ async function addMovieFromApi(movieId) {
     const movie = await response.json();
 
     if (!response.ok || movie.error) {
-      setMovieSearchStatus(movie.error || 'NÃ£o consegui carregar os detalhes.');
+      setMovieSearchStatus(movie.error || 'Não consegui carregar os detalhes.');
       return;
     }
 
@@ -537,7 +537,7 @@ function renderMovieGrid() {
         </div>
         ${movie.watchedAt ? `<p class="movie-card-watched">visto ${escapeHtml(formatWatchedDate(movie.watchedAt))}</p>` : ''}
         <div class="movie-card-stars">
-          ${renderStars(movie.legueRating, 'legue-stars', 'LeguÃ©')}
+          ${renderStars(movie.legueRating, 'legue-stars', 'Legué')}
           ${renderStars(movie.leozinhoRating, 'leozinho-stars', 'Leozinho')}
         </div>
       </div>

@@ -63,22 +63,25 @@ body {
 .special-heart-float {
   position: absolute;
   bottom: -70px;
-  width: var(--size);
-  height: var(--size);
+  width: max(var(--size), 58px);
+  height: max(var(--size), 58px);
   padding: 0;
   border: none;
   appearance: none;
   background: transparent;
   cursor: pointer;
   pointer-events: auto;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
   animation: specialFloatUp linear forwards;
   filter: drop-shadow(0 0 10px color-mix(in srgb, var(--heart-color), transparent 50%));
 }
 
 .special-heart-float svg {
   display: block;
-  width: 100%;
-  height: 100%;
+  width: var(--size);
+  height: var(--size);
+  margin: auto;
   transition: transform 0.18s ease;
 }
 
@@ -1740,6 +1743,7 @@ h1 a {
 .calendar-day.has-memories {
   background: linear-gradient(135deg, #c9e4f5 0%, #a8d8f0 100%);
   border-color: var(--blue-mid);
+  color: var(--blue-dark);
   font-weight: 700;
 }
 
@@ -1753,9 +1757,7 @@ h1 a {
 }
 
 .calendar-day-indicator {
-  position: absolute;
-  bottom: 4px;
-  font-size: 1rem;
+  display: none;
 }
 
 /* ---- CINEMINHA ---- */
@@ -3099,8 +3101,68 @@ h1 a {
     flex-wrap: wrap;
   }
 
+  .memories-title {
+    width: 100%;
+    justify-content: center;
+    gap: 0.7rem;
+    margin-top: 0.6rem;
+    text-align: center;
+  }
+
+  .memories-title h2 {
+    font-size: clamp(1.75rem, 8vw, 2.35rem);
+    line-height: 1.08;
+  }
+
+  .special-heart-trigger {
+    flex: 0 0 auto;
+  }
+
+  .add-memory-card {
+    width: 100%;
+    max-width: 100%;
+    margin-inline: auto;
+    padding: 1.15rem 0.85rem 1.25rem;
+    border-radius: 18px;
+    overflow: hidden;
+  }
+
+  .add-memory-card h3 {
+    text-align: center;
+    margin-left: 0;
+  }
+
+  .add-row {
+    width: 100%;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+
+  .add-row input[type="date"],
+  .add-row input[type="text"],
+  .upload-btn,
+  .btn-add-memory {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    min-height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 14px;
+    text-align: center;
+  }
+
   .memories-grid {
     grid-template-columns: 1fr;
+    justify-items: center;
+    gap: 1.15rem;
+  }
+
+  .memory-card {
+    width: 100%;
+    max-width: 100%;
+    border-radius: 18px;
   }
 
   .memory-carousel-slide {
@@ -3253,7 +3315,6 @@ h1 a {
 
 @media (max-width: 380px) {
   .timer-card,
-  .add-memory-card,
   .memory-info,
   .cineminha-teaser,
   .movie-search-card,
@@ -3262,6 +3323,23 @@ h1 a {
   .certificate-card {
     padding-left: 0.85rem;
     padding-right: 0.85rem;
+  }
+
+  .memories-title {
+    gap: 0.55rem;
+  }
+
+  .memories-title h2 {
+    font-size: clamp(1.55rem, 7.4vw, 1.95rem);
+  }
+
+  .special-heart-trigger {
+    width: 28px;
+    height: 28px;
+  }
+
+  .add-memory-card {
+    padding: 1rem 0.7rem 1.15rem;
   }
 
   .timer-num {

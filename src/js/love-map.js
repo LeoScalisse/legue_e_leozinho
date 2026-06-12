@@ -269,7 +269,7 @@ function renderLoveMapPlaces() {
       const markerElement = document.createElement('button');
       markerElement.className = 'love-map-marker';
       markerElement.type = 'button';
-      markerElement.setAttribute('aria-label', `Abrir memÃ³ria de ${place.name}`);
+      markerElement.setAttribute('aria-label', `Abrir memória de ${place.name}`);
       markerElement.innerHTML = '<span></span>';
 
       const popup = new maplibregl.Popup({ offset: 18, closeButton: true, maxWidth: '280px' })
@@ -294,7 +294,7 @@ function renderLoveMapPlaces() {
         <path d="M28 8C18 8 10 16 10 26c0 12 18 24 18 24s18-12 18-24C46 16 38 8 28 8Z" fill="#b8ddf0" opacity="0.7"/>
         <circle cx="28" cy="26" r="6" stroke="#5fafd4" stroke-width="2"/>
       </svg>
-      <p>Nenhum lugar salvo ainda.<br>Pesquise o primeiro cantinho de vocÃªs.</p>
+      <p>Nenhum lugar salvo ainda.<br>Pesquise o primeiro cantinho de vocês.</p>
     </div>`;
     return;
   }
@@ -374,7 +374,7 @@ async function searchLovePlace() {
   const query = input ? input.value.trim() : '';
 
   if (!query) {
-    setLoveMapStatus('Digite um endereÃ§o ou nome de lugar.');
+    setLoveMapStatus('Digite um endereço ou nome de lugar.');
     return;
   }
 
