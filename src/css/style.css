@@ -3133,9 +3133,16 @@ h1 a {
   }
 
   .add-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
     width: 100%;
     align-items: stretch;
     gap: 0.75rem;
+  }
+
+  .add-row > * {
+    min-width: 0;
+    max-width: 100%;
   }
 
   .add-row input[type="date"],
@@ -3143,14 +3150,22 @@ h1 a {
   .upload-btn,
   .btn-add-memory {
     width: 100%;
+    inline-size: 100%;
     min-width: 0;
+    min-inline-size: 0;
     max-width: 100%;
+    max-inline-size: 100%;
     min-height: 56px;
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: 14px;
     text-align: center;
+  }
+
+  .add-row input[type="date"] {
+    appearance: none;
+    -webkit-appearance: none;
   }
 
   .memories-grid {
