@@ -25,6 +25,28 @@
     return `${prefix}${path}`;
   }
 
+  function getDaysTogetherCount() {
+    const startDate = new Date(2024, 2, 10);
+    const today = new Date();
+    const startDay = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
+    const currentDay = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    const elapsedDays = Math.floor((currentDay - startDay) / 86400000);
+    return Math.max(1, elapsedDays + 1);
+  }
+
+  function resolveSpecialHeartContent(content) {
+    if (content.dynamic === 'days-together') {
+      const daysTogether = getDaysTogetherCount();
+      return {
+        ...content,
+        title: `Dias juntos: ${daysTogether} dias`,
+        text: `Hoje \u00e9 o nosso ${daysTogether}\u00ba dia juntos desde 10 de mar\u00e7o de 2024. Mais um diazinho entrando para a nossa hist\u00f3ria, amor`
+      };
+    }
+
+    return content;
+  }
+
   const specialHeartContents = [
     {
       title: 'US IN OTHER UNIVERSE',
@@ -166,6 +188,17 @@
       text: 'Te devo um cookie, disque para 11950845288 e informe que ganhou seu premio!'
     },
     {
+      title: '821 12',
+      text: '821 dias, 12 horas 39 minutos, 43 segundos, 12 mil\u00e9simos (obs: chutei os n\u00fameros ainda n\u00e3o tenho essa precis\u00e3o toda, mas sei que preciso de voc\u00ea) estamos juntos no momento que to escrevendo isso aqui amor.'
+    },
+    {
+      title: 'Twins',
+      text: 'Lembra da nosso brincadeira de eu ter um g\u00eameo? kkkkk Fazendo aqui lembrei kkkkk resenha n\u00e3o ?'
+    },
+    {
+      dynamic: 'days-together'
+    },
+    {
       title: 'Obrigado',
       text: 'Obrigado por me amar amor, obrigado por ter me escolhido e não ter desistido de mim. Espero que esteja gostando do site, eu te amo demais amor!!!!'
     },
@@ -268,7 +301,7 @@
   }
 
   function getNextSpecialHeartContent() {
-    const nextContent = getNextQueuedContent();
+    const nextContent = resolveSpecialHeartContent(getNextQueuedContent());
     const color = pickRandomItem(specialHeartColors, lastColor, item => item);
 
     lastColor = color;

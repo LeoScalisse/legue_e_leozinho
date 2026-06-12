@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nosso mural</title>
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="theme-color" content="#7ec8e3">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Legue">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="apple-touch-icon" href="/src/assets/icons/apple-touch-icon.png">
+<link href="../src/css/style.css" rel="stylesheet">
+</head>
+<body>
+
+<div class="hearts-bg" id="heartsBg"></div>
+
+<main class="container love-mural-page">
+  <a class="profile-back" href="../index.html">Back</a>
+
+  <header class="cineminha-header">
+    <div class="title-heart">
+      <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M18 31 C18 31 4 22 4 13 C4 8 8 5 12 5 C14.5 5 17 6.5 18 9 C19 6.5 21.5 5 24 5 C28 5 32 8 32 13 C32 22 18 31 18 31Z" fill="#7ec8e3" opacity="0.8"/>
+      </svg>
+      <h1>Nosso mural</h1>
+      <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M18 31 C18 31 4 22 4 13 C4 8 8 5 12 5 C14.5 5 17 6.5 18 9 C19 6.5 21.5 5 24 5 C28 5 32 8 32 13 C32 22 18 31 18 31Z" fill="#7ec8e3" opacity="0.8"/>
+      </svg>
+    </div>
+    <p class="subtitle">Algumas lembranças nossas ao longo do tempo do nosso amor</p>
+  </header>
+
+  <section class="love-mural-shell" aria-labelledby="muralSphereTitle">
+    <div class="movie-library-heading">
+      <div>
+        <h2 id="muralSphereTitle"></h2>
+      </div>
+    </div>
+    <div class="love-mural-sphere-wrap">
+      <div class="love-mural-sphere" id="loveMuralSphere" aria-label="Esfera interativa de fotos"></div>
+    </div>
+  </section>
+</main>
+
+<div class="love-mural-modal" id="loveMuralModal" onclick="closeLoveMuralModal()" aria-hidden="true">
+  <div class="love-mural-modal-content" onclick="event.stopPropagation()" role="dialog" aria-modal="true" aria-labelledby="loveMuralModalTitle">
+    <button class="heart-popup-close" type="button" onclick="closeLoveMuralModal()" aria-label="Fechar">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M12 22C17.5 22 22 17.5 22 12C22 6.5 17.5 2 12 2C6.5 2 2 6.5 2 12C2 17.5 6.5 22 12 22Z" />
+        <path d="M8.5 8.5L15.5 15.5" />
+        <path d="M15.5 8.5L8.5 15.5" />
+      </svg>
+    </button>
+    <img id="loveMuralModalImage" alt="Foto do mural">
+    <div class="love-mural-modal-copy">
+      <h2 id="loveMuralModalTitle"></h2>
+      <p id="loveMuralModalDescription"></p>
+      <div class="love-mural-modal-actions">
+        <button type="button" class="love-mural-edit-button" id="loveMuralEditButton" onclick="openLoveMuralCaptionEditor()">Editar texto</button>
+      </div>
+      <form class="love-mural-caption-form" id="loveMuralCaptionForm" onsubmit="saveLoveMuralCaption(event)" hidden>
+        <label>
+          Título da foto
+          <input type="text" id="loveMuralTitleInput" placeholder="Dê um título para essa foto">
+        </label>
+        <label>
+          Textinho da foto
+          <textarea id="loveMuralCaptionInput" rows="4" placeholder="Escreva uma lembrança para essa foto"></textarea>
+        </label>
+        <div class="love-mural-caption-actions">
+          <button type="submit" class="love-place-save">Salvar</button>
+          <button type="button" class="love-mural-cancel-button" onclick="closeLoveMuralCaptionEditor()">Cancelar</button>
+        </div>
+        <span id="loveMuralCaptionStatus" aria-live="polite"></span>
+      </form>
+      <button type="button" class="love-place-delete-button" id="loveMuralDeleteButton" onclick="deleteActiveLoveMuralItem()">Excluir foto</button>
+    </div>
+  </div>
+</div>
+
+<div class="heart-popup" id="heartPopup" onclick="closeSpecialHeartPopup()" aria-hidden="true">
+  <div class="heart-popup-content" onclick="event.stopPropagation()" role="dialog" aria-modal="true" aria-labelledby="heartPopupTitle">
+    <button class="heart-popup-close" type="button" onclick="closeSpecialHeartPopup()" aria-label="Fechar">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M12 22C17.5 22 22 17.5 22 12C22 6.5 17.5 2 12 2C6.5 2 2 6.5 2 12C2 17.5 6.5 22 12 22Z" />
+        <path d="M8.5 8.5L15.5 15.5" />
+        <path d="M15.5 8.5L8.5 15.5" />
+      </svg>
+    </button>
+    <div class="heart-popup-icon">
+      <svg viewBox="0 0 24 24" fill="#facc15" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 21C12 21 3 15 3 9C3 6.2 5.2 4 8 4C9.6 4 11 4.9 12 6.2C13 4.9 14.4 4 16 4C18.8 4 21 6.2 21 9C21 15 12 21 12 21Z"/>
+      </svg>
+    </div>
+    <h3 id="heartPopupTitle">Good amor?</h3>
+    <p>Amor fica esperta que vira e mexe vai passar uns corações especiais para você que é muito especial, cuidado pra não perder!</p>
+  </div>
+</div>
+
+<script src="../src/js/back-buttons.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../src/js/supabase-config.js"></script>
+<script src="../src/js/supabase-client.js"></script>
+<script src="../src/js/special-hearts.js"></script>
+<script src="../src/js/nosso-mural.js"></script>
+<script src="/src/js/pwa.js"></script>
+</body>
+</html>

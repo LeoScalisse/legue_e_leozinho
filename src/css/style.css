@@ -2512,6 +2512,519 @@ h1 a {
   margin-top: 0.8rem;
 }
 
+/* ---- LOVE AGENDA ---- */
+.love-agenda-page,
+.love-mural-page {
+  max-width: 1080px;
+}
+
+.agenda-teaser .cineminha-teaser-icon {
+  background: linear-gradient(160deg, #e9f6ff 0%, #ffffff 100%);
+}
+
+.mural-teaser .cineminha-teaser-icon {
+  background: linear-gradient(160deg, #f3ecff 0%, #f8fcff 100%);
+}
+
+.love-agenda-shell,
+.love-mural-shell {
+  background: var(--card);
+  border: 1.5px solid var(--blue-light);
+  border-radius: 18px;
+  box-shadow: var(--shadow);
+  padding: 1.25rem;
+  margin-bottom: 1.3rem;
+  backdrop-filter: blur(8px);
+}
+
+.love-agenda-toolbar {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 0.7rem;
+  margin-bottom: 1rem;
+}
+
+.love-agenda-heading h2 {
+  color: var(--blue-dark);
+  font-size: 1.35rem;
+}
+
+.love-agenda-heading p,
+.love-agenda-status {
+  color: var(--text-soft);
+  font-size: 0.9rem;
+}
+
+.love-agenda-nav,
+.love-agenda-today {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px solid var(--blue-light);
+  border-radius: 12px;
+  background: var(--white);
+  color: var(--blue-dark);
+  min-height: 42px;
+  font-family: var(--font-site);
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.love-agenda-nav {
+  width: 42px;
+  padding: 0;
+}
+
+.love-agenda-nav svg {
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.love-agenda-today {
+  padding: 0 1rem;
+}
+
+.love-agenda-nav:hover,
+.love-agenda-today:hover {
+  background: var(--bg2);
+  transform: translateY(-1px);
+}
+
+.love-agenda-week {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(132px, 1fr));
+  gap: 0.7rem;
+  overflow-x: auto;
+  padding-bottom: 0.35rem;
+}
+
+.love-agenda-day {
+  min-height: 260px;
+  border: 1.5px solid rgba(168, 216, 240, 0.9);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.72);
+  padding: 0.75rem;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+}
+
+.love-agenda-day:hover,
+.love-agenda-day.is-today {
+  border-color: var(--blue-mid);
+  box-shadow: 0 8px 24px rgba(90, 160, 200, 0.18);
+}
+
+.love-agenda-day:hover {
+  transform: translateY(-2px);
+}
+
+.love-agenda-day-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.8rem;
+}
+
+.love-agenda-day-head span {
+  color: var(--text-soft);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.love-agenda-day-head strong {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  background: var(--bg2);
+  color: var(--blue-dark);
+}
+
+.love-agenda-day.is-today .love-agenda-day-head strong {
+  background: var(--blue-mid);
+  color: var(--white);
+}
+
+.love-agenda-day-events {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.love-agenda-empty-day {
+  color: var(--text-soft);
+  font-size: 0.86rem;
+  line-height: 1.45;
+  opacity: 0.72;
+}
+
+.love-agenda-event {
+  display: grid;
+  gap: 0.25rem;
+  width: 100%;
+  border: none;
+  border-left: 5px solid var(--event-color);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--event-color) 16%, #ffffff);
+  color: var(--text);
+  padding: 0.65rem 0.7rem;
+  font-family: var(--font-site);
+  text-align: left;
+  cursor: pointer;
+}
+
+.love-agenda-event span {
+  color: var(--text-soft);
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.love-agenda-event strong {
+  color: var(--text);
+  font-size: 0.88rem;
+}
+
+.love-agenda-event small {
+  color: var(--text-soft);
+  font-size: 0.76rem;
+  line-height: 1.35;
+}
+
+.love-agenda-modal,
+.love-mural-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: rgba(42, 127, 168, 0.2);
+  backdrop-filter: blur(6px);
+}
+
+.love-agenda-modal.open,
+.love-mural-modal.open {
+  display: flex;
+}
+
+.love-agenda-modal-content,
+.love-mural-modal-content {
+  position: relative;
+  width: min(94vw, 640px);
+  max-height: calc(100dvh - 1.5rem);
+  overflow-y: auto;
+  border: 1.5px solid var(--blue-light);
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 20px 70px rgba(42, 127, 168, 0.25);
+}
+
+.love-agenda-modal-content {
+  padding: 1.25rem;
+}
+
+.love-agenda-form {
+  display: grid;
+  gap: 0.95rem;
+}
+
+.love-agenda-form h2 {
+  color: var(--blue-dark);
+  padding-right: 2.2rem;
+}
+
+.love-agenda-form label {
+  display: grid;
+  gap: 0.45rem;
+  color: var(--blue-dark);
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.love-agenda-form input,
+.love-agenda-form textarea {
+  width: 100%;
+  border: 1.5px solid var(--blue-light);
+  border-radius: 12px;
+  background: var(--white);
+  color: var(--text);
+  font-family: var(--font-site);
+  font-size: 0.95rem;
+  padding: 0.8rem 0.9rem;
+  outline: none;
+}
+
+.love-agenda-form input:focus,
+.love-agenda-form textarea:focus {
+  border-color: var(--blue-mid);
+}
+
+.love-agenda-time-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.8rem;
+}
+
+.love-agenda-colors {
+  border: none;
+  display: grid;
+  gap: 0.6rem;
+}
+
+.love-agenda-colors legend {
+  color: var(--blue-dark);
+  font-size: 0.82rem;
+  font-weight: 800;
+  margin-bottom: 0.45rem;
+}
+
+.love-agenda-color-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.55rem;
+}
+
+.love-agenda-color-option {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  border: 1.5px solid var(--blue-light);
+  border-radius: 12px;
+  background: var(--white);
+  padding: 0.55rem;
+  cursor: pointer;
+}
+
+.love-agenda-color-option input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.love-agenda-color-option span {
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  background: var(--agenda-color);
+  box-shadow: inset 0 0 0 3px rgba(255, 255, 255, 0.5);
+}
+
+.love-agenda-color-option small {
+  color: var(--text);
+  font-weight: 800;
+}
+
+.love-agenda-color-option:has(input:checked) {
+  border-color: var(--agenda-color);
+  background: color-mix(in srgb, var(--agenda-color) 15%, #ffffff);
+}
+
+.love-agenda-modal-actions {
+  display: flex;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+}
+
+/* ---- LOVE MURAL ---- */
+.love-mural-sphere-wrap {
+  display: flex;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+.love-mural-sphere {
+  position: relative;
+  width: min(72vw, 620px);
+  aspect-ratio: 1;
+  min-width: 300px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 50% 45%, rgba(255,255,255,0.92) 0 18%, rgba(214,236,247,0.44) 46%, rgba(126,200,227,0.16) 70%, transparent 71%),
+    radial-gradient(circle at center, rgba(255,255,255,0.55), rgba(255,255,255,0));
+  cursor: grab;
+  overflow: hidden;
+  touch-action: none;
+}
+
+.love-mural-sphere:active {
+  cursor: grabbing;
+}
+
+.love-mural-node {
+  position: absolute;
+  display: block;
+  padding: 0;
+  border: 2px solid rgba(255, 255, 255, 0.86);
+  border-radius: 999px;
+  background: var(--white);
+  box-shadow: 0 12px 26px rgba(42, 127, 168, 0.22);
+  overflow: hidden;
+  cursor: pointer;
+  transition: box-shadow 0.2s;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+.love-mural-node:hover {
+  box-shadow: 0 18px 34px rgba(42, 127, 168, 0.28);
+}
+
+.love-mural-node img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  pointer-events: none;
+}
+
+.love-mural-empty {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: var(--text-soft);
+  font-weight: 700;
+  text-align: center;
+  padding: 1rem;
+}
+
+.love-mural-modal-content {
+  width: min(96vw, 980px);
+  overflow-y: auto;
+}
+
+.love-mural-modal-content > img {
+  display: block;
+  width: 100%;
+  max-height: min(70dvh, 620px);
+  object-fit: contain;
+  background: var(--bg2);
+}
+
+.love-mural-modal-copy {
+  display: grid;
+  gap: 0.65rem;
+  padding: 1.15rem;
+}
+
+.love-mural-modal-copy h2 {
+  color: var(--blue-dark);
+}
+
+.love-mural-modal-copy p {
+  color: var(--text-soft);
+  line-height: 1.55;
+}
+
+.love-mural-modal-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.love-mural-caption-form {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.love-mural-caption-form[hidden],
+.love-mural-edit-button[hidden] {
+  display: none;
+}
+
+.love-mural-edit-button,
+.love-mural-cancel-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px solid var(--blue-light);
+  border-radius: 12px;
+  background: var(--bg2);
+  color: var(--blue-dark);
+  padding: 0.72rem 1rem;
+  font-family: var(--font-site);
+  font-size: 0.9rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.love-mural-edit-button {
+  width: 100%;
+  min-height: 48px;
+  border: none;
+  border-radius: 14px;
+  background: var(--blue-mid);
+  color: var(--white);
+  box-shadow: 0 10px 24px rgba(95, 175, 212, 0.25);
+}
+
+.love-mural-edit-button::before {
+  content: "✎";
+  margin-right: 0.45rem;
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.love-mural-edit-button:hover,
+.love-mural-edit-button:focus-visible {
+  background: var(--blue-dark);
+  outline: none;
+}
+
+.love-mural-caption-form label {
+  display: grid;
+  gap: 0.45rem;
+  color: var(--blue-dark);
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.love-mural-caption-form input,
+.love-mural-caption-form textarea {
+  width: 100%;
+  border: 1.5px solid var(--blue-light);
+  border-radius: 12px;
+  background: var(--white);
+  color: var(--text);
+  font-family: var(--font-site);
+  font-size: 0.95rem;
+  line-height: 1.5;
+  padding: 0.8rem 0.9rem;
+  resize: vertical;
+  outline: none;
+}
+
+.love-mural-caption-form input:focus,
+.love-mural-caption-form textarea:focus {
+  border-color: var(--blue-mid);
+}
+
+.love-mural-caption-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}
+
+#loveMuralCaptionStatus {
+  min-height: 1.2rem;
+  color: var(--text-soft);
+  font-size: 0.84rem;
+}
+
 .love-map-search-row input,
 .love-place-form input,
 .love-place-form textarea,
@@ -3070,6 +3583,8 @@ h1 a {
   .profile-container,
   .cineminha-page,
   .love-map-page,
+  .love-agenda-page,
+  .love-mural-page,
   .certificate-page {
     width: min(100%, 100vw);
     padding-left: 0.9rem;
@@ -3281,6 +3796,47 @@ h1 a {
   .love-map-search-row button,
   .love-place-save {
     width: 100%;
+  }
+
+  .love-agenda-toolbar {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+  }
+
+  .love-agenda-today {
+    grid-column: 1 / -1;
+    width: 100%;
+  }
+
+  .love-agenda-week {
+    grid-template-columns: 1fr;
+    overflow-x: visible;
+  }
+
+  .love-agenda-day {
+    min-height: 150px;
+  }
+
+  .love-agenda-color-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .love-agenda-time-row,
+  .love-agenda-modal-actions {
+    grid-template-columns: 1fr;
+    flex-direction: column;
+  }
+
+  .love-agenda-modal-actions button {
+    width: 100%;
+  }
+
+  .love-mural-sphere {
+    width: min(92vw, 420px);
+    min-width: 260px;
+  }
+
+  .love-mural-modal-content > img {
+    max-height: 55dvh;
   }
 
   .love-map-canvas {

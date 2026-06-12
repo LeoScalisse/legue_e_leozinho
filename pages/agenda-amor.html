@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agenda do nosso amor</title>
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="theme-color" content="#7ec8e3">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Legue">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="apple-touch-icon" href="/src/assets/icons/apple-touch-icon.png">
+<link href="../src/css/style.css" rel="stylesheet">
+</head>
+<body>
+
+<div class="hearts-bg" id="heartsBg"></div>
+
+<main class="container love-agenda-page">
+  <a class="profile-back" href="../index.html">Back</a>
+
+  <header class="cineminha-header">
+    <div class="title-heart">
+      <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M18 31 C18 31 4 22 4 13 C4 8 8 5 12 5 C14.5 5 17 6.5 18 9 C19 6.5 21.5 5 24 5 C28 5 32 8 32 13 C32 22 18 31 18 31Z" fill="#7ec8e3" opacity="0.8"/>
+      </svg>
+      <h1>Agenda do nosso amor</h1>
+      <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M18 31 C18 31 4 22 4 13 C4 8 8 5 12 5 C14.5 5 17 6.5 18 9 C19 6.5 21.5 5 24 5 C28 5 32 8 32 13 C32 22 18 31 18 31Z" fill="#7ec8e3" opacity="0.8"/>
+      </svg>
+    </div>
+    <p class="subtitle">Nossos planos aqui para nos organizarmos.</p>
+  </header>
+
+  <section class="love-agenda-shell" aria-labelledby="agendaWeekTitle">
+    <div class="love-agenda-toolbar">
+      <button type="button" class="love-agenda-nav" onclick="moveLoveAgendaWeek(-1)" aria-label="Semana anterior">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 19L8 12L15 5"/></svg>
+      </button>
+      <div class="love-agenda-heading">
+        <h2 id="agendaWeekTitle">Semana</h2>
+        <p id="agendaWeekRange"></p>
+      </div>
+      <button type="button" class="love-agenda-nav" onclick="moveLoveAgendaWeek(1)" aria-label="Próxima semana">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5L16 12L9 19"/></svg>
+      </button>
+      <button type="button" class="love-agenda-today" onclick="goLoveAgendaToday()">Hoje</button>
+    </div>
+
+    <div class="love-agenda-status" id="loveAgendaStatus"></div>
+    <div class="love-agenda-week" id="loveAgendaWeek" aria-live="polite"></div>
+  </section>
+</main>
+
+<div class="love-agenda-modal" id="loveAgendaModal" onclick="closeLoveAgendaModal()" aria-hidden="true">
+  <div class="love-agenda-modal-content" onclick="event.stopPropagation()" role="dialog" aria-modal="true" aria-labelledby="loveAgendaModalTitle">
+    <button class="heart-popup-close" type="button" onclick="closeLoveAgendaModal()" aria-label="Fechar">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M12 22C17.5 22 22 17.5 22 12C22 6.5 17.5 2 12 2C6.5 2 2 6.5 2 12C2 17.5 6.5 22 12 22Z" />
+        <path d="M8.5 8.5L15.5 15.5" />
+        <path d="M15.5 8.5L8.5 15.5" />
+      </svg>
+    </button>
+
+    <form class="love-agenda-form" onsubmit="saveLoveAgendaEvent(event)">
+      <h2 id="loveAgendaModalTitle">Novo compromisso</h2>
+      <input type="hidden" id="agendaEventId">
+
+      <label>
+        Dia
+        <input type="date" id="agendaEventDate" required>
+      </label>
+      <label>
+        Nome
+        <input type="text" id="agendaEventTitle" placeholder="Ex: Nosso jantar">
+      </label>
+      <label class="love-agenda-full">
+        Descrição
+        <textarea id="agendaEventDescription" rows="4" placeholder="Detalhes do compromisso"></textarea>
+      </label>
+      <div class="love-agenda-time-row">
+        <label>
+          Começo
+          <input type="time" id="agendaEventStart" required>
+        </label>
+        <label>
+          Fim
+          <input type="time" id="agendaEventEnd" required>
+        </label>
+      </div>
+
+      <fieldset class="love-agenda-colors">
+        <legend>Cor do compromisso</legend>
+        <div class="love-agenda-color-grid" id="agendaColorGrid"></div>
+      </fieldset>
+
+      <div class="love-agenda-modal-actions">
+        <button type="submit" class="love-place-save">Salvar compromisso</button>
+        <button type="button" class="love-place-delete-button" id="agendaDeleteButton" onclick="deleteLoveAgendaActiveEvent()" hidden>Excluir</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="heart-popup" id="heartPopup" onclick="closeSpecialHeartPopup()" aria-hidden="true">
+  <div class="heart-popup-content" onclick="event.stopPropagation()" role="dialog" aria-modal="true" aria-labelledby="heartPopupTitle">
+    <button class="heart-popup-close" type="button" onclick="closeSpecialHeartPopup()" aria-label="Fechar">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M12 22C17.5 22 22 17.5 22 12C22 6.5 17.5 2 12 2C6.5 2 2 6.5 2 12C2 17.5 6.5 22 12 22Z" />
+        <path d="M8.5 8.5L15.5 15.5" />
+        <path d="M15.5 8.5L8.5 15.5" />
+      </svg>
+    </button>
+    <div class="heart-popup-icon">
+      <svg viewBox="0 0 24 24" fill="#facc15" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 21C12 21 3 15 3 9C3 6.2 5.2 4 8 4C9.6 4 11 4.9 12 6.2C13 4.9 14.4 4 16 4C18.8 4 21 6.2 21 9C21 15 12 21 12 21Z"/>
+      </svg>
+    </div>
+    <h3 id="heartPopupTitle">Good amor?</h3>
+    <p>Amor fica esperta que vira e mexe vai passar uns corações especiais para você que é muito especial, cuidado pra não perder!</p>
+  </div>
+</div>
+
+<script src="../src/js/back-buttons.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../src/js/supabase-config.js"></script>
+<script src="../src/js/supabase-client.js"></script>
+<script src="../src/js/special-hearts.js"></script>
+<script src="../src/js/agenda-amor.js"></script>
+<script src="/src/js/pwa.js"></script>
+</body>
+</html>

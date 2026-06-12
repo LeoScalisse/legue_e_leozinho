@@ -1,4 +1,4 @@
-const CACHE_NAME = 'legue-leozinho-v3';
+const CACHE_NAME = 'legue-leozinho-v12';
 const APP_SHELL = [
   '/',
   '/index.html',
@@ -13,6 +13,8 @@ const APP_SHELL = [
   '/src/js/profile-characteristics.js',
   '/src/js/cineminha.js',
   '/src/js/love-map.js',
+  '/src/js/agenda-amor.js',
+  '/src/js/nosso-mural.js',
   '/src/assets/icons/apple-touch-icon.png',
   '/src/assets/icons/icon-192.png',
   '/src/assets/icons/icon-512.png',
@@ -24,7 +26,9 @@ const APP_SHELL = [
   '/pages/cineminha-2024.html',
   '/pages/cineminha-2023.html',
   '/pages/certificado.html',
-  '/pages/mapa-amor.html'
+  '/pages/mapa-amor.html',
+  '/pages/agenda-amor.html',
+  '/pages/nosso-mural.html'
 ];
 
 self.addEventListener('install', event => {
