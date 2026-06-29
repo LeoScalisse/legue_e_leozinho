@@ -1,4 +1,4 @@
-const CACHE_NAME = 'legue-leozinho-v12';
+const CACHE_NAME = 'legue-leozinho-v13';
 const APP_SHELL = [
   '/',
   '/index.html',
@@ -6,6 +6,7 @@ const APP_SHELL = [
   '/src/css/style.css',
   '/src/js/supabase-config.js',
   '/src/js/supabase-client.js',
+  '/src/vendor/supabase-js.min.js',
   '/src/js/special-hearts.js',
   '/src/js/script.js',
   '/src/js/back-buttons.js',

@@ -194,8 +194,6 @@ async function loadLoveMuralCaptions() {
 async function loadLoveMuralItems() {
   loveMuralItems = [];
   await loadLoveMuralCaptions();
-  renderLoveMural();
-  return;
 
   if (window.loveSupabase && window.loveSupabase.isReady()) {
     try {
