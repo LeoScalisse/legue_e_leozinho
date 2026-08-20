@@ -1,4 +1,4 @@
-const CACHE_NAME = 'legue-leozinho-v13';
+const CACHE_NAME = 'legue-leozinho-v14';
 const APP_SHELL = [
   '/',
   '/index.html',

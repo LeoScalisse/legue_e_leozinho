@@ -8,8 +8,8 @@ values (
   'love-photos',
   'love-photos',
   true,
-  31457280,
-  array['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'video/mp4']
+  52428800,
+  array['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/heic', 'image/heif', 'image/heic-sequence', 'image/heif-sequence', 'video/mp4', 'video/quicktime', 'video/x-m4v']
 )
 on conflict (id) do update
 set public = excluded.public,

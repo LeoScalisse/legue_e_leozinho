@@ -6,10 +6,13 @@ let memories = [];
 let pendingPhotos = [];
 let pendingPhotoFiles = [];
 const MAX_MEMORY_IMAGE_BYTES = 10 * 1024 * 1024;
-const MAX_MEMORY_VIDEO_BYTES = 30 * 1024 * 1024;
-const SUPPORTED_MEMORY_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
-const SUPPORTED_MEMORY_VIDEO_TYPES = ['video/mp4'];
+const MAX_MEMORY_VIDEO_BYTES = 50 * 1024 * 1024;
+const SUPPORTED_MEMORY_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/heic', 'image/heif', 'image/heic-sequence', 'image/heif-sequence'];
+const SUPPORTED_MEMORY_VIDEO_TYPES = ['video/mp4', 'video/quicktime', 'video/x-m4v'];
 const SUPPORTED_MEMORY_FILE_TYPES = [...SUPPORTED_MEMORY_IMAGE_TYPES, ...SUPPORTED_MEMORY_VIDEO_TYPES];
+const SUPPORTED_MEMORY_IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'webp', 'gif', 'heic', 'heif'];
+const SUPPORTED_MEMORY_VIDEO_EXTENSIONS = ['mp4', 'mov', 'm4v'];
+const IPHONE_MEDIA_MIME_ERROR = 'O Supabase ainda nao esta aceitando esse formato de midia. Rode a migracao do bucket e tente de novo.';
 let currentCalendarDate = new Date(new Date().getFullYear(), new Date().getMonth(), 1); // Mês atual
 
 // ---- LOAD ----
@@ -94,6 +97,32 @@ function mediaTypeFromMime(mimeType) {
   return mimeType && mimeType.startsWith('video/') ? 'video' : 'image';
 }
 
+function fileExtension(file) {
+  const name = file && file.name ? file.name : '';
+  const parts = name.toLowerCase().split('.');
+  return parts.length > 1 ? parts.pop() : '';
+}
+
+function isSupportedMemoryFile(file) {
+  const mimeType = (file && file.type ? file.type : '').toLowerCase();
+  const extension = fileExtension(file);
+
+  return SUPPORTED_MEMORY_FILE_TYPES.includes(mimeType) ||
+    SUPPORTED_MEMORY_IMAGE_EXTENSIONS.includes(extension) ||
+    SUPPORTED_MEMORY_VIDEO_EXTENSIONS.includes(extension);
+}
+
+function mediaTypeFromFile(file) {
+  const mimeType = (file && file.type ? file.type : '').toLowerCase();
+  const extension = fileExtension(file);
+
+  if (SUPPORTED_MEMORY_VIDEO_TYPES.includes(mimeType) || SUPPORTED_MEMORY_VIDEO_EXTENSIONS.includes(extension)) {
+    return 'video';
+  }
+
+  return 'image';
+}
+
 function normalizeMemoryMedia(memory) {
   if (Array.isArray(memory.media)) return memory.media;
   return (memory.photos || []).map(photo => (
@@ -103,29 +132,54 @@ function normalizeMemoryMedia(memory) {
 
 function renderMemoryMediaItem(item, className = 'memory-carousel-media') {
   if (item.type === 'video') {
-    return `<video class="${className}" src="${item.url}" controls preload="metadata" playsinline></video>`;
+    return `<video class="${className}" src="${item.url}" controls preload="metadata" playsinline onerror="handleMemoryMediaError(this, 'video')"></video>`;
   }
 
-  return `<img class="${className}" src="${item.url}" alt="Memoria" onclick="openLightbox('${item.url}', 'image')" style="cursor:pointer">`;
+  return `<img class="${className}" src="${item.url}" alt="Memoria" onclick="openLightbox('${item.url}', 'image')" onerror="handleMemoryMediaError(this, 'image')" style="cursor:pointer">`;
+}
+
+function handleMemoryMediaError(element, mediaType) {
+  if (!element) return;
+  const url = element.currentSrc || element.src || element.getAttribute('src') || '';
+  const fallback = document.createElement(url ? 'a' : 'div');
+  fallback.className = 'memory-media-fallback';
+  fallback.textContent = mediaType === 'video' ? 'Abrir video' : 'Abrir imagem';
+  if (url) {
+    fallback.href = url;
+    fallback.target = '_blank';
+    fallback.rel = 'noopener';
+  }
+  element.replaceWith(fallback);
 }
 
 function validateMemoryFiles(files) {
-  const invalidFiles = files.filter(file => !SUPPORTED_MEMORY_FILE_TYPES.includes(file.type));
+  const invalidFiles = files.filter(file => !isSupportedMemoryFile(file));
   if (invalidFiles.length > 0) {
-    return `Alguns arquivos estao em um formato que o site nao consegue exibir/salvar. Use JPG, PNG, WEBP, GIF ou video MP4. Arquivo: ${invalidFiles[0].name}`;
+    return `Alguns arquivos estao em um formato que o site nao consegue exibir/salvar. Use JPG, PNG, WEBP, GIF, HEIC, HEIF, MP4, MOV ou M4V. Arquivo: ${invalidFiles[0].name}`;
   }
 
-  const oversizedImage = files.find(file => mediaTypeFromMime(file.type) === 'image' && file.size > MAX_MEMORY_IMAGE_BYTES);
+  const oversizedImage = files.find(file => mediaTypeFromFile(file) === 'image' && file.size > MAX_MEMORY_IMAGE_BYTES);
   if (oversizedImage) {
     return `A foto "${oversizedImage.name}" tem mais de 10 MB. Diminua a imagem e tente de novo.`;
   }
 
-  const oversizedVideo = files.find(file => mediaTypeFromMime(file.type) === 'video' && file.size > MAX_MEMORY_VIDEO_BYTES);
+  const oversizedVideo = files.find(file => mediaTypeFromFile(file) === 'video' && file.size > MAX_MEMORY_VIDEO_BYTES);
   if (oversizedVideo) {
-    return `O video "${oversizedVideo.name}" tem mais de 30 MB. Diminua o video e tente de novo.`;
+    return `O video "${oversizedVideo.name}" tem mais de 50 MB. Diminua o video e tente de novo.`;
   }
 
   return '';
+}
+
+function memorySaveErrorMessage(error) {
+  const code = String(error && (error.code || error.error || error.statusCode) || '').toLowerCase();
+  const message = String(error && (error.message || error.error_description || error.statusText) || '').toLowerCase();
+
+  if (code.includes('invalidmimetype') || code.includes('invalid_mime_type') || message.includes('mime type')) {
+    return IPHONE_MEDIA_MIME_ERROR;
+  }
+
+  return 'Nao consegui salvar essa memoria no Supabase. Nada foi salvo localmente para nao perder a sincronizacao. Tente novamente em instantes.';
 }
 
 async function removeUploadedPhotos(paths) {
@@ -202,12 +256,13 @@ function previewPhotos(input) {
     reader.onload = e => {
       const media = {
         url: e.target.result,
-        type: mediaTypeFromMime(file.type)
+        type: mediaTypeFromFile(file)
       };
       pendingPhotos.push(media);
       const preview = document.createElement(media.type === 'video' ? 'video' : 'img');
       preview.src = media.url;
       preview.className = 'preview-media';
+      preview.onerror = () => handleMemoryMediaError(preview, media.type);
       if (media.type === 'video') {
         preview.controls = true;
         preview.muted = true;
@@ -247,7 +302,7 @@ async function addMemory() {
           memory_id: memoryId,
           storage_path: uploaded.storage_path,
           public_url: uploaded.public_url,
-          media_type: mediaTypeFromMime(pendingPhotoFiles[index].type),
+          media_type: mediaTypeFromFile(pendingPhotoFiles[index]),
           display_order: index
         });
       }
@@ -287,7 +342,7 @@ async function addMemory() {
     } catch (e) {
       await removeUploadedPhotos(uploadedPhotos.map(photo => photo.storage_path).filter(Boolean));
       if (memoryInserted) await removeMemoryRow(memoryId);
-      alert('Nao consegui salvar essa memoria no Supabase. Nada foi salvo localmente para nao perder a sincronizacao. Tente novamente em instantes.');
+      alert(memorySaveErrorMessage(e));
       console.warn('Erro ao salvar memoria no Supabase.', e);
       return;
     }

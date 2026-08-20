@@ -1455,6 +1455,20 @@ h1 a {
   background: #ffffff;
 }
 
+.memory-media-fallback {
+  min-height: 180px;
+  width: 100%;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  border: 1px dashed rgba(52,102,142,0.24);
+  background: rgba(255,255,255,0.72);
+  color: var(--blue-dark);
+  font-weight: 700;
+  text-align: center;
+  text-decoration: none;
+}
+
 /* ---- MEMORIES GRID ---- */
 .memories-grid {
   display: grid;

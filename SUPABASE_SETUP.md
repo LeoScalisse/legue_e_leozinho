@@ -30,6 +30,10 @@ window.SUPABASE_CONFIG = {
 
 Depois disso, memorias, fotos, filmes, notas e atributos dos perfis passam a ser carregados do Supabase.
 
+## Atualizar bucket de midias
+
+Se o projeto ja existia antes do suporte a midias de iPhone, rode `supabase/migrations/20260820_iphone_media_types.sql` no SQL Editor. Essa migracao aumenta o limite do bucket `love-photos` para 50 MB e libera HEIC/HEIF, MOV e M4V.
+
 ## Observacao de seguranca
 
 As policies em `supabase/schema.sql` estao abertas para leitura e escrita publica porque o site ainda nao tem login. Se o site for publicado em um link publico, qualquer pessoa com acesso ao app pode alterar dados usando a anon/public key. O proximo passo recomendado e adicionar autenticacao ou uma senha simples protegendo as escritas.
